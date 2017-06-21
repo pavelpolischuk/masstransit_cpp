@@ -1,13 +1,13 @@
 #include <masstransit_cpp/receive_endpoint.hpp>
 #include <masstransit_cpp/exchange_manager.hpp>
+#include <masstransit_cpp/message_consumer.hpp>
 
 #include <boost/log/trivial.hpp>
 
 namespace masstransit_cpp
 {
-	receive_endpoint::receive_endpoint(uri const& uri, std::string const& name, boost::posix_time::time_duration const& timeout)
-		: timeout_(timeout.total_milliseconds())
-		, queue_(name)
+	receive_endpoint::receive_endpoint(uri const& uri, std::string const& name)
+		: queue_(name)
 		, uri_(uri)
 	{}
 
@@ -19,7 +19,12 @@ namespace masstransit_cpp
 
 	receive_endpoint& receive_endpoint::poll_timeout(boost::posix_time::time_duration const& timeout)
 	{
-		timeout_ = timeout.total_milliseconds();
+		auto ms = timeout.total_milliseconds();
+		if (ms <= static_cast<int64_t>(std::numeric_limits<int>::max()))
+			timeout_ = static_cast<int>(ms);
+		else 
+			BOOST_LOG_TRIVIAL(warning) << "receive_endpoint::poll_timeout: ms count is greater numeric_limits<int>::max\n";
+
 		return *this;
 	}
 

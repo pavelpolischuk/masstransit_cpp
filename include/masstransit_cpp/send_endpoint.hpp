@@ -1,12 +1,13 @@
 #pragma once
 #include <masstransit_cpp/global.hpp>
-#include <masstransit_cpp/consume_context.hpp>
+#include <masstransit_cpp/host_info.hpp>
 #include <masstransit_cpp/uri.hpp>
 
 #include <SimpleAmqpClient/SimpleAmqpClient.h>
 
 namespace masstransit_cpp
 {
+	struct consume_context_info;
 	class exchange_manager;
 
 	class MASSTRANSIT_CPP_EXPORT send_endpoint

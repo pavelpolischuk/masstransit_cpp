@@ -1,7 +1,6 @@
 #include <masstransit_cpp/consume_context.hpp>
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <boost/lexical_cast.hpp>
 
 namespace masstransit_cpp
 {
@@ -27,10 +26,21 @@ namespace masstransit_cpp
 			{ "conversationId", to_string(conversation_id) },
 			{ "sourceAddress", source_address },
 			{ "destinationAddress", destination_address },
-			{ "sourceAddress", source_address },
 			{ "messageType", message_types },
 			{ "message", message },
 			{ "host", send_host.to_json() }
 		};
+	}
+
+	bool operator==(consume_context_info const& lhv, consume_context_info const& rhv)
+	{
+		return
+			lhv.message_id == rhv.message_id &&
+			lhv.conversation_id == rhv.conversation_id &&
+			lhv.source_address == rhv.source_address &&
+			lhv.destination_address == rhv.destination_address &&
+			lhv.message_types == rhv.message_types &&
+			lhv.message == rhv.message &&
+			lhv.send_host == rhv.send_host;
 	}
 }

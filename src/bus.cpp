@@ -1,5 +1,7 @@
 #include <masstransit_cpp/bus.hpp>
 #include <masstransit_cpp/exchange_manager.hpp>
+#include <masstransit_cpp/receive_endpoint.hpp>
+#include <masstransit_cpp/send_endpoint.hpp>
 
 #include <boost/log/trivial.hpp>
 
@@ -35,7 +37,7 @@ namespace masstransit_cpp
 			return *this;
 		}
 
-		auto inserted = receivers_.insert({ key, { uri, queue, boost::posix_time::milliseconds(300) } });
+		auto inserted = receivers_.insert({ key, { uri, queue } });
 		if(inserted.second)
 		{
 			configurator(inserted.first->second);
@@ -61,13 +63,13 @@ namespace masstransit_cpp
 						smth_consumed = true;
 				}
 
-				if (!smth_consumed)
+				if (!smth_consumed && working)
 					std::this_thread::sleep_for(std::chrono::seconds(15));
 			}
 		});
 	}
 
-	void bus::stop()
+	void bus::stop(bool need_clean)
 	{
 		working = false;
 
@@ -76,6 +78,12 @@ namespace masstransit_cpp
 		if (thread_->joinable()) thread_->join();
 
 		thread_ = nullptr;
+
+	}
+
+	std::set<std::string> const& bus::exchanges() const
+	{
+		return exchange_manager_->all();
 	}
 
 	void bus::setup()

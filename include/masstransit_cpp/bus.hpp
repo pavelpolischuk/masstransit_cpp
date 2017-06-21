@@ -1,16 +1,17 @@
 #pragma once
 #include <masstransit_cpp/global.hpp>
-#include <masstransit_cpp/consume_context.hpp>
 #include <masstransit_cpp/i_bus.hpp>
-#include <masstransit_cpp/json.hpp>
-#include <masstransit_cpp/uri.hpp>
-#include <masstransit_cpp/receive_endpoint.hpp>
-#include <masstransit_cpp/send_endpoint.hpp>
 
+#include <set>
 #include <thread>
 
 namespace masstransit_cpp
 {
+	struct uri;
+	class exchange_manager;
+	class receive_endpoint;
+	class send_endpoint;
+
 	class MASSTRANSIT_CPP_EXPORT bus : public i_bus
 	{
 	public:
@@ -21,7 +22,9 @@ namespace masstransit_cpp
 		bus & receive_endpoint(uri const& uri, std::string const& queue, std::function<void(receive_endpoint&)> const& configurator);
 
 		void start();
-		void stop();
+		void stop(bool need_clean = false);
+
+		std::set<std::string> const& exchanges() const;
 
 	protected:
 		std::shared_ptr<std::thread> thread_;

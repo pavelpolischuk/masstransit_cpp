@@ -10,8 +10,8 @@ namespace masstransit_cpp
 {
 	struct MASSTRANSIT_CPP_EXPORT consume_context_info
 	{
-		explicit consume_context_info(nlohmann::json const& json);
 		consume_context_info();
+		explicit consume_context_info(nlohmann::json const& json);
 
 		template<typename message_t>
 		static consume_context_info create(message_t const& message)
@@ -37,6 +37,8 @@ namespace masstransit_cpp
 		nlohmann::json message;
 
 		host_info send_host;
+
+		friend bool operator==(consume_context_info const& lhv, consume_context_info const& rhv);
 	};
 
 
