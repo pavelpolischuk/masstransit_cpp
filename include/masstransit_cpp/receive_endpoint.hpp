@@ -1,7 +1,5 @@
 #pragma once
 #include <masstransit_cpp/global.hpp>
-#include <masstransit_cpp/consume_context.hpp>
-#include <masstransit_cpp/message_consumer.hpp>
 #include <masstransit_cpp/uri.hpp>
 
 #include <SimpleAmqpClient/SimpleAmqpClient.h>
@@ -10,11 +8,12 @@
 namespace masstransit_cpp
 {
 	class exchange_manager;
+	class i_message_consumer;
 
 	class MASSTRANSIT_CPP_EXPORT receive_endpoint
 	{
 	public:
-		receive_endpoint(uri const& uri, std::string const& name, boost::posix_time::time_duration const& timeout);
+		receive_endpoint(uri const& uri, std::string const& name);
 
 		receive_endpoint & consumer(std::shared_ptr<i_message_consumer> const& consumer);
 		receive_endpoint & poll_timeout(boost::posix_time::time_duration const& timeout);
@@ -24,7 +23,7 @@ namespace masstransit_cpp
 		std::map<std::string, std::shared_ptr<i_message_consumer>> consumers_by_type_;
 		std::string tag_;
 
-		int timeout_;
+		int timeout_{ 500 };
 		std::string queue_;
 		uri uri_;
 		

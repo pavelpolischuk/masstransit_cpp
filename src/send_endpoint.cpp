@@ -1,5 +1,6 @@
 #include <masstransit_cpp/send_endpoint.hpp>
 #include <masstransit_cpp/exchange_manager.hpp>
+#include <masstransit_cpp/consume_context.hpp>
 
 #include <boost/log/trivial.hpp>
 

@@ -1,3 +1,6 @@
 [submodule "3rd_party/simple_amqp_client_binary"]
 	path = 3rd_party/simple_amqp_client_binary
 	url = https://teamcityhost/gitlab/cpp_common/simple_amqp_client_binary.git
+[submodule "3rd_party/googletest_binary"]
+	path = 3rd_party/googletest_binary
+	url = https://teamcityhost/gitlab/cpp_common/googletest_binary.git

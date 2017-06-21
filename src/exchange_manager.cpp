@@ -4,11 +4,6 @@
 
 namespace masstransit_cpp
 {
-	bool exchange_manager::has_exchange(std::string const& type) const
-	{
-		return exchanges_.count(type) > 0;
-	}
-
 	void exchange_manager::declare_message_type(std::string const& type, boost::shared_ptr<AmqpClient::Channel> const& channel)
 	{
 		if (exchanges_.count(type) == 0)

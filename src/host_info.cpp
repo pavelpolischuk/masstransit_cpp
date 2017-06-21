@@ -1,11 +1,10 @@
 #include <masstransit_cpp/host_info.hpp>
 
-#include <boost/uuid/string_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/lexical_cast.hpp>
-
 namespace masstransit_cpp
 {
+	host_info::host_info()
+	{}
+
 	host_info::host_info(nlohmann::json const& obj)
 	{
 		machine_name = obj.get<std::string>("machineName", "");
@@ -30,5 +29,18 @@ namespace masstransit_cpp
 			{ "massTransitVersion", masstransit_version },
 			{ "operatingSystemVersion", operating_system_version }
 		};
+	}
+
+	bool operator==(host_info const& lhv, host_info const& rhv)
+	{
+		return
+			lhv.machine_name == rhv.machine_name &&
+			lhv.process_name == rhv.process_name &&
+			lhv.process_id == rhv.process_id &&
+			lhv.assembly == rhv.assembly &&
+			lhv.assembly_version == rhv.assembly_version &&
+			lhv.framework_version == rhv.framework_version &&
+			lhv.masstransit_version == rhv.masstransit_version &&
+			lhv.operating_system_version == rhv.operating_system_version;
 	}
 }
