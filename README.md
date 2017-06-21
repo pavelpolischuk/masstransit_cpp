@@ -1,11 +1,10 @@
-
 # Masstransit_cpp
 
 AMQP message publishing and consuming library. Like and a little compatible with Masstransit for .Net.
 
 ### Quick start
 
-##### Create message struct
+#### Create message struct
 
 It is necessary to implement `ctor` from `nlohmann::json`, static method `message_type()->std::string` and serialize method `to_json()->nlohmann::json`.
 
@@ -21,11 +20,11 @@ struct my_message
 	
 	static std::string message_type() { return "MyMessage"; }
 
-	nlohmann::json to_json() { return { {"data_1", data_1}, {"data_2", data_2} };
+	nlohmann::json to_json() { return { {"data_1", data_1}, {"data_2", data_2} }; }
 };
 ```
 
-##### Create message consumer
+#### Create message consumer
 
 Consumer have to extend `masstrasit_cpp::message_consumer<message_t>` and override `void consume(masstrasit_cpp::consume_context<message_t> const&)`.
 
@@ -46,7 +45,7 @@ public:
 };
 ```
 
-##### Configure and start bus
+#### Configure and start bus
 
 ```cpp
 #include <my_consumer.hpp>
@@ -54,11 +53,11 @@ public:
 
 auto one_consumer = std::make_shared<my_consumer>();
 
-uri uri("127.0.0.1", "user", "password");
+masstransit_cpp::uri uri("127.0.0.1", "user", "password");
 
 auto bus = std::make_shared<masstransit_cpp::bus>();
-bus->host(uri, [](send_endpoint& conf) {})
-	.receive_endpoint(uri, "QueueName", [=](receive_endpoint & conf)
+bus->host(uri, [](masstransit_cpp::send_endpoint& conf) {})
+	.receive_endpoint(uri, "QueueName", [=](masstransit_cpp::receive_endpoint & conf)
 {
 	conf.consumer(one_consumer);
 	conf.poll_timeout(boost::posix_time::seconds(1));
@@ -67,10 +66,10 @@ bus->host(uri, [](send_endpoint& conf) {})
 b->start();
 ```
 
-##### Publish message
+#### Publish message
 
-Bus implement interface `i_bus` and has template method `void publish<message_t>(message_t const&)`.
-You need pass your configured `bus` as dependence where you want to publish message. 
+Bus implement interface `masstransit_cpp::i_bus` and has template method `void publish<message_t>(message_t const&)`.
+You need pass your configured `bus` as dependence where you want to publish message.
 
 ```cpp
 
@@ -85,7 +84,7 @@ void publish_foo(std::shared_ptr<masstransit_cpp::i_bus> const& bus)
 };
 ```
 
-##### And stop bus
+#### And stop bus
 
 ```cpp
 b->stop();
