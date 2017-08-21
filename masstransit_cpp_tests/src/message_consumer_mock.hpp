@@ -1,4 +1,4 @@
-#include <message_mock.hpp>
+#include "message_mock.hpp"
 
 #include <masstransit_cpp/message_consumer.hpp>
 #include <boost/optional.hpp>
