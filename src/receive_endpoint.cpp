@@ -3,6 +3,7 @@
 #include <masstransit_cpp/message_consumer.hpp>
 
 #include <boost/log/trivial.hpp>
+#include <SimpleAmqpClient/SimpleAmqpClient.h>
 
 namespace masstransit_cpp
 {
