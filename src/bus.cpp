@@ -69,7 +69,7 @@ namespace masstransit_cpp
 		});
 	}
 
-	void bus::stop(bool need_clean)
+	void bus::stop()
 	{
 		working = false;
 

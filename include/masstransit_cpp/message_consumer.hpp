@@ -1,4 +1,5 @@
 #pragma once
+
 #include <masstransit_cpp/global.hpp>
 #include <masstransit_cpp/consume_context.hpp>
 

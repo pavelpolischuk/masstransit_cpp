@@ -1,4 +1,5 @@
 #pragma once
+
 #include <masstransit_cpp/global.hpp>
 #include <masstransit_cpp/i_bus.hpp>
 
@@ -22,7 +23,7 @@ namespace masstransit_cpp
 		bus & receive_endpoint(uri const& uri, std::string const& queue, std::function<void(receive_endpoint&)> const& configurator);
 
 		void start();
-		void stop(bool need_clean = false);
+		void stop();
 
 		std::set<std::string> const& exchanges() const;
 

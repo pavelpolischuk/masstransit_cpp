@@ -36,7 +36,7 @@ Consumer have to extend `masstrasit_cpp::message_consumer<message_t>` and overri
 class my_message_consumer : public masstrasit_cpp::message_consumer<my_message>
 {
 public:
-	~my_message_consumer() override {};
+	~my_message_consumer() override {}
 	
 	void consume(masstrasit_cpp::consume_context<my_message> const& context) override
 	{
