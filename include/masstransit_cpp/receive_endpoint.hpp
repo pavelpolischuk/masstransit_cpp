@@ -3,8 +3,11 @@
 #include <masstransit_cpp/global.hpp>
 #include <masstransit_cpp/uri.hpp>
 
-#include <SimpleAmqpClient/SimpleAmqpClient.h>
 #include <boost/date_time/posix_time/posix_time_duration.hpp>
+#include <boost/shared_ptr.hpp>
+#include <vector>
+
+namespace AmqpClient { class Channel; }
 
 namespace masstransit_cpp
 {
