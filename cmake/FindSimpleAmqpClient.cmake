@@ -8,7 +8,7 @@ FIND_PATH(SimpleAmqpClient_INCLUDE_DIR
 	)
 
 FIND_LIBRARY(SimpleAmqpClient_LIBRARY
-	NAMES SimpleAmqpClient.2.lib
+	NAMES SimpleAmqpClient SimpleAmqpClient.2
     HINTS ${SimpleAmqpClient_DIR}/lib
 	)
 
