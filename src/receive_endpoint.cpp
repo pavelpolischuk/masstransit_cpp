@@ -1,6 +1,5 @@
-#include <masstransit_cpp/receive_endpoint.hpp>
-#include <masstransit_cpp/exchange_manager.hpp>
-#include <masstransit_cpp/message_consumer.hpp>
+#include "masstransit_cpp/receive_endpoint.hpp"
+#include "masstransit_cpp/exchange_manager.hpp"
 
 #include <boost/log/trivial.hpp>
 #include <SimpleAmqpClient/SimpleAmqpClient.h>
@@ -11,12 +10,6 @@ namespace masstransit_cpp
 		: queue_(name)
 		, uri_(uri)
 	{}
-
-	receive_endpoint& receive_endpoint::consumer(std::shared_ptr<i_message_consumer> const& consumer)
-	{
-		consumers_by_type_["urn:message:" + consumer->message_name()] = consumer;
-		return *this;
-	}
 
 	receive_endpoint& receive_endpoint::poll_timeout(boost::posix_time::time_duration const& timeout)
 	{
@@ -29,19 +22,31 @@ namespace masstransit_cpp
 		return *this;
 	}
 
+	receive_endpoint& receive_endpoint::auto_delete(bool is)
+	{
+		auto_delete_ = is;
+		return *this;
+	}
+
+	receive_endpoint& receive_endpoint::prefetch_count(uint16_t count)
+	{
+		prefetch_count_ = count;
+		return *this;
+	}
+
 	void receive_endpoint::connect(std::shared_ptr<exchange_manager> const& exchange_manager)
 	{
 		queue_channel_ = AmqpClient::Channel::CreateFromUri(uri_.to_string());
-		queue_channel_->DeclareQueue(queue_, false, true, false, false);
+		queue_channel_->DeclareQueue(queue_, false, true, false, auto_delete_);
 		
 		for(auto const& c : consumers_by_type_)
 		{
-			auto type = c.second->message_name();
+			auto type = c.second->message_type();
 			exchange_manager->declare_message_type(type, queue_channel_);
 			queue_channel_->BindQueue(queue_, type);
 		}
 		
-		tag_ = queue_channel_->BasicConsume(queue_, "", true, false);
+		tag_ = queue_channel_->BasicConsume(queue_, "", true, false, true, prefetch_count_);
 	}
 
 	bool receive_endpoint::try_consume() const
@@ -73,12 +78,12 @@ namespace masstransit_cpp
 		}
 		catch (std::exception & ex)
 		{
-			BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_name() << "] try handle message:\n" 
+			BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_type() << "] try handle message:\n" 
 									 << body << "\n\tException: " << ex.what();
 		}
 		catch (...)
 		{
-			BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_name() << "] try handle message:\n" 
+			BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_type() << "] try handle message:\n"
 									 << body << "\n\tException: unknown";
 		}
 
