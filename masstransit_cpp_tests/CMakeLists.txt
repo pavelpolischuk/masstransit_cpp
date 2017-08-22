@@ -1,7 +1,7 @@
-include_directories(BEFORE SYSTEM ${gtest_SOURCE_DIR}/include)
 include_directories(../include)
 
 add_executable(masstransit_cpp_tests 
+	src/catch.hpp
 	src/message_mock.hpp
 	src/message_consumer_mock.hpp
 	
@@ -11,7 +11,7 @@ add_executable(masstransit_cpp_tests
 	src/bus_config_tests.cpp
 )
 
-target_link_libraries(masstransit_cpp_tests masstransit_cpp gtest)
+target_link_libraries(masstransit_cpp_tests masstransit_cpp)
 add_test(masstransit_cpp_tests masstransit_cpp_tests)
 
 install(TARGETS masstransit_cpp_tests
