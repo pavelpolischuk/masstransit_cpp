@@ -85,19 +85,8 @@ option(BUILD_TESTS "Enable tests" OFF)
 
 if (BUILD_TESTS)
     enable_testing()
-    set(BUILD_GTEST ON)
     set(BUILD_SHARED_LIBS OFF)
-    set(gtest_force_shared_crt ON)
-	
-    mark_as_advanced(BUILD_GTEST)
-    mark_as_advanced(gmock_build_tests)
-    mark_as_advanced(gtest_build_samples)
-    mark_as_advanced(gtest_build_tests)
-    mark_as_advanced(gtest_disable_pthreads)
-    mark_as_advanced(gtest_force_shared_crt)
-    mark_as_advanced(gtest_hide_internal_symbols)
-    add_subdirectory(3rd_party/googletest)
-	add_subdirectory(masstransit_cpp_tests)
+    add_subdirectory(masstransit_cpp_tests)
 endif (BUILD_TESTS)
 
 
