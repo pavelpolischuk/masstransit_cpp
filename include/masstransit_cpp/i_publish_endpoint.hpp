@@ -6,10 +6,10 @@
 
 namespace masstransit_cpp
 {
-	class MASSTRANSIT_CPP_EXPORT i_bus
+	class MASSTRANSIT_CPP_EXPORT i_publish_endpoint
 	{
 	public:
-		virtual ~i_bus() = default;
+		virtual ~i_publish_endpoint() = default;
 
 		template<typename message_t, typename std::enable_if<
 			std::is_convertible<nlohmann::json, message_t>::value, int>::type = 0 >

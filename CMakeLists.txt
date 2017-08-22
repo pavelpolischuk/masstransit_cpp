@@ -35,11 +35,14 @@ set(AdditionalLibraries ${AdditionalLibraries} ${SimpleAmqpClient_LIBRARIES})
 
 set(SOURCE_FILES 
 	include/masstransit_cpp/bus.hpp
+    include/masstransit_cpp/bus_factory.hpp
 	include/masstransit_cpp/consume_context.hpp
 	include/masstransit_cpp/exchange_manager.hpp
 	include/masstransit_cpp/global.hpp
 	include/masstransit_cpp/host_info.hpp
-	include/masstransit_cpp/i_bus.hpp
+	include/masstransit_cpp/i_bus_control.hpp
+	include/masstransit_cpp/i_message_consumer.hpp
+	include/masstransit_cpp/i_publish_endpoint.hpp
 	include/masstransit_cpp/json.hpp
 	include/masstransit_cpp/message_consumer.hpp
 	include/masstransit_cpp/receive_endpoint.hpp
@@ -47,8 +50,10 @@ set(SOURCE_FILES
 	include/masstransit_cpp/uri.hpp
 	
 	src/bus.cpp
+	src/bus_factory.cpp
 	src/consume_context.cpp
 	src/exchange_manager.cpp
+	src/i_bus_control.cpp
 	src/host_info.cpp
 	src/receive_endpoint.cpp
 	src/send_endpoint.cpp
@@ -100,11 +105,13 @@ install(TARGETS masstransit_cpp
 	
 install(FILES
     include/masstransit_cpp/bus.hpp
+    include/masstransit_cpp/bus_factory.hpp
 	include/masstransit_cpp/consume_context.hpp
 	include/masstransit_cpp/exchange_manager.hpp
 	include/masstransit_cpp/global.hpp
 	include/masstransit_cpp/host_info.hpp
-	include/masstransit_cpp/i_bus.hpp
+	include/masstransit_cpp/i_bus_control.hpp
+	include/masstransit_cpp/i_publish_endpoint.hpp
 	include/masstransit_cpp/json.hpp
 	include/masstransit_cpp/message_consumer.hpp
 	include/masstransit_cpp/receive_endpoint.hpp

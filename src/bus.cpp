@@ -1,7 +1,7 @@
-#include <masstransit_cpp/bus.hpp>
-#include <masstransit_cpp/exchange_manager.hpp>
-#include <masstransit_cpp/receive_endpoint.hpp>
-#include <masstransit_cpp/send_endpoint.hpp>
+#include "masstransit_cpp/bus.hpp"
+#include "masstransit_cpp/exchange_manager.hpp"
+#include "masstransit_cpp/receive_endpoint.hpp"
+#include "masstransit_cpp/send_endpoint.hpp"
 
 #include <boost/log/trivial.hpp>
 
@@ -14,7 +14,12 @@ namespace masstransit_cpp
 
 	bus::~bus()
 	{
-		stop();
+	}
+
+	bus& bus::auto_delete(bool is)
+	{
+		exchange_manager_->auto_delete(is);
+		return *this;
 	}
 
 	bus& bus::host(uri const& uri, std::function<void(send_endpoint&)> const& host_configurator)
@@ -22,7 +27,7 @@ namespace masstransit_cpp
 		if (send_endpoint_ != nullptr)
 			throw std::exception("host has been already configured.");
 
-		send_endpoint_ = std::make_shared<send_endpoint>(uri);
+		send_endpoint_ = std::make_unique<send_endpoint>(uri);
 		host_configurator(*send_endpoint_);
 		return *this;
 	}
@@ -46,44 +51,25 @@ namespace masstransit_cpp
 		return *this;
 	}
 
-	void bus::start()
-	{
-		working = true;
-		
-		setup();
-
-		thread_ = std::make_shared<std::thread>([this]()
-		{
-			while(working)
-			{
-				auto smth_consumed = false;
-				for (auto & q : receivers_)
-				{
-					if (q.second.try_consume())
-						smth_consumed = true;
-				}
-
-				if (!smth_consumed && working)
-					std::this_thread::sleep_for(std::chrono::seconds(15));
-			}
-		});
-	}
-
-	void bus::stop()
-	{
-		working = false;
-
-		if (thread_ == nullptr) return;
-
-		if (thread_->joinable()) thread_->join();
-
-		thread_ = nullptr;
-
-	}
-
 	std::set<std::string> const& bus::exchanges() const
 	{
 		return exchange_manager_->all();
+	}
+
+	void bus::run()
+	{
+		while (working)
+		{
+			auto smth_consumed = false;
+			for (auto & q : receivers_)
+			{
+				if (q.second.try_consume())
+					smth_consumed = true;
+			}
+
+			if (!smth_consumed && working)
+				std::this_thread::sleep_for(std::chrono::seconds(15));
+		}
 	}
 
 	void bus::setup()

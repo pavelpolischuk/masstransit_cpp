@@ -10,15 +10,6 @@ namespace masstransit_cpp_tests
 {
 	using namespace masstransit_cpp;
 
-	void clean(uri const& uri, std::set<std::string> const& exchanges, std::set<std::string> const& queues)
-	{
-		auto channel = AmqpClient::Channel::CreateFromUri(uri.to_string());
-		for(auto const& e : exchanges)
-			channel->DeleteExchange(e);
-		for(auto const& q : queues)
-			channel->DeleteQueue(q);
-	}
-
 	TEST_CASE("bus_config_tests", "[bus_config]")
 	{
 		SECTION( "ctor_make_context_info_from_json" ) 
@@ -30,7 +21,7 @@ namespace masstransit_cpp_tests
 				.host(uri, [](send_endpoint& conf) {})
 				.receive_endpoint(uri, "Test.AppName", [=](receive_endpoint & conf)
 			{
-				conf.consumer(consumer_mock);
+				conf.consumer<message_mock>(consumer_mock);
 				conf.poll_timeout(boost::posix_time::millisec(300));
 			});
     	}
@@ -43,9 +34,11 @@ namespace masstransit_cpp_tests
 			bus b;
 			b
 				.host(uri, [](send_endpoint& conf) {})
+				.auto_delete(true)
 				.receive_endpoint(uri, "Test.AppName", [=](receive_endpoint & conf)
 			{
-				conf.consumer(consumer_mock);
+				conf.consumer<message_mock>(consumer_mock);
+				conf.auto_delete(true);
 				conf.poll_timeout(boost::posix_time::seconds(6));
 			});
 
@@ -55,8 +48,6 @@ namespace masstransit_cpp_tests
 			b.stop();
 
 			REQUIRE(consumer_mock->saved_value.get_value_or(0) == 42);
-			
-			clean(uri, b.exchanges(), {"Test.AppName"});
 		}
 	}
 
