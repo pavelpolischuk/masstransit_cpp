@@ -29,7 +29,7 @@ pwd
 # run the build script
 export INSTALL_PREFIX=../_install
 cmake -G "${GENERATOR}" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DSimpleAmqpClient_DIR=${SimpleAmqpClient_DIR} -DBOOST_ROOT=${BOOST} ..
-cmake --build . --target install ;
+cmake --build .
 
-export PATH="${PATH}:${BOOST}/stage/lib"
-${INSTALL_PREFIX}/bin/masstransit_cpp_tests
+export PATH="${PATH}:${BOOST}/stage/lib:${INSTALL_PREFIX}/bin"
+./Debug/masstransit_cpp_tests

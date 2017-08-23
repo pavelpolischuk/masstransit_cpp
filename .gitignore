@@ -1,2 +1,20 @@
 
 build/
+_build/
+_install/
+_prereqs/
+
+*~
+.*.sw?
+CMakeCache.txt
+cmake_install.cmake
+CMakeFiles/
+Debug/
+*.vcxproj*
+*.sln
+*.suo
+*.*sdf
+ipch/
+install_manifest.txt
+.ycm_extra_conf.py*
+*.orig
