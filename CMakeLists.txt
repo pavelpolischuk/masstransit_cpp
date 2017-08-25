@@ -18,6 +18,9 @@ set(MTC_SOVERSION ${_VERSION_MAJOR})
 
 
 # Dependencies
+if(NOT BOOST_ROOT)
+	set(BOOST_ROOT "c:/Projects/boost_1_61_0")
+endif()
 
 find_package(Boost REQUIRED COMPONENTS log date_time)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
@@ -25,6 +28,10 @@ link_directories(${Boost_LIBRARY_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_NO_LIB -DBOOST_LOG_DYN_LINK")
 set(AdditionalLibraries ${AdditionalLibraries} ${Boost_LIBRARIES})
 
+
+if(NOT SimpleAmqpClient_DIR)
+	set(SimpleAmqpClient_DIR "${CMAKE_CURRENT_SOURCE_DIR}/_install")
+endif()
 
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(SimpleAmqpClient REQUIRED)
@@ -35,30 +42,52 @@ set(AdditionalLibraries ${AdditionalLibraries} ${SimpleAmqpClient_LIBRARIES})
 
 set(SOURCE_FILES 
 	include/masstransit_cpp/bus.hpp
+	include/masstransit_cpp/bus_control.hpp
     include/masstransit_cpp/bus_factory.hpp
 	include/masstransit_cpp/consume_context.hpp
-	include/masstransit_cpp/exchange_manager.hpp
 	include/masstransit_cpp/global.hpp
 	include/masstransit_cpp/host_info.hpp
-	include/masstransit_cpp/i_bus_control.hpp
 	include/masstransit_cpp/i_message_consumer.hpp
 	include/masstransit_cpp/i_publish_endpoint.hpp
 	include/masstransit_cpp/json.hpp
 	include/masstransit_cpp/message_consumer.hpp
-	include/masstransit_cpp/receive_endpoint.hpp
-	include/masstransit_cpp/send_endpoint.hpp
-	include/masstransit_cpp/uri.hpp
+	include/masstransit_cpp/i_receive_endpoint_configurator.hpp
+
+	include/masstransit_cpp/rabbit_mq/exchange_manager.hpp
+	include/masstransit_cpp/rabbit_mq/rabbit_mq_bus.hpp
+	include/masstransit_cpp/rabbit_mq/rabbit_mq_configurator.hpp
+	include/masstransit_cpp/rabbit_mq/receive_endpoint.hpp
+	include/masstransit_cpp/rabbit_mq/receive_endpoint_configurator.hpp
+	include/masstransit_cpp/rabbit_mq/amqp_host.hpp
+	include/masstransit_cpp/in_memory/in_memory_bus.hpp
+	include/masstransit_cpp/in_memory/in_memory_configurator.hpp
+	include/masstransit_cpp/in_memory/receive_endpoint.hpp
+	include/masstransit_cpp/in_memory/receive_endpoint_configurator.hpp
+	include/masstransit_cpp/utils/tasks_queue.hpp
+	include/masstransit_cpp/utils/thread_pool.hpp
+	include/masstransit_cpp/utils/worker.hpp
+	include/masstransit_cpp/utils/worker_thread.hpp
 	
-	src/bus.cpp
+	src/bus_control.cpp
 	src/bus_factory.cpp
 	src/consume_context.cpp
 	src/exchange_manager.cpp
-	src/i_bus_control.cpp
 	src/host_info.cpp
-	src/receive_endpoint.cpp
-	src/send_endpoint.cpp
-	src/uri.cpp
-)
+	src/i_receive_endpoint_configurator.cpp
+
+	src/in_memory/receive_endpoint.cpp
+	src/in_memory/receive_endpoint_configurator.cpp
+	src/in_memory/in_memory_bus.cpp
+	src/in_memory/in_memory_configurator.cpp
+	src/rabbit_mq/amqp_host.cpp
+	src/rabbit_mq/rabbit_mq_bus.cpp
+	src/rabbit_mq/rabbit_mq_configurator.cpp
+	src/rabbit_mq/receive_endpoint.cpp
+	src/rabbit_mq/receive_endpoint_configurator.cpp
+	src/utils/thread_pool.cpp
+	src/utils/worker.cpp
+	src/utils/worker_thread.cpp
+	)
 
 
 # Build

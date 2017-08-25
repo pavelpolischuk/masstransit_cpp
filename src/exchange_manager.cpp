@@ -1,4 +1,4 @@
-#include <masstransit_cpp/exchange_manager.hpp>
+#include <masstransit_cpp/rabbit_mq/exchange_manager.hpp>
 
 #include <boost/log/trivial.hpp>
 #include <SimpleAmqpClient/SimpleAmqpClient.h>

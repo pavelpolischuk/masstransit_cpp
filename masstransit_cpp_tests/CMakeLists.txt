@@ -9,6 +9,8 @@ add_executable(masstransit_cpp_tests
 	src/message_mock.cpp
 	src/consume_context_tests.cpp
 	src/bus_config_tests.cpp
+	src/amqp_host_tests.cpp
+	src/worker_tests.cpp
 )
 
 target_link_libraries(masstransit_cpp_tests masstransit_cpp)
