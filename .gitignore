@@ -3,6 +3,7 @@ build/
 _build/
 _install/
 _prereqs/
+.idea/
 
 *~
 .*.sw?
