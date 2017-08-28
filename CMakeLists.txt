@@ -51,6 +51,7 @@ set(SOURCE_FILES
 	include/masstransit_cpp/i_publish_endpoint.hpp
 	include/masstransit_cpp/json.hpp
 	include/masstransit_cpp/message_consumer.hpp
+	include/masstransit_cpp/i_receive_endpoint.hpp
 	include/masstransit_cpp/i_receive_endpoint_configurator.hpp
 
 	include/masstransit_cpp/rabbit_mq/exchange_manager.hpp
@@ -73,6 +74,7 @@ set(SOURCE_FILES
 	src/consume_context.cpp
 	src/exchange_manager.cpp
 	src/host_info.cpp
+	src/i_receive_endpoint.cpp
 	src/i_receive_endpoint_configurator.cpp
 
 	src/in_memory/receive_endpoint.cpp
@@ -89,6 +91,32 @@ set(SOURCE_FILES
 	src/utils/worker_thread.cpp
 	)
 
+macro(OrganizeSources)
+    foreach (_srcFile ${ARGN})
+        get_filename_component(folder ${_srcFile} DIRECTORY)
+        if ("${folder}_" STREQUAL "_")
+            set(_NoSrcGroupFiles ${_NoSrcGroupFiles} ${_srcFile})
+            continue()
+        endif ("${folder}_" STREQUAL "_")
+        string(REPLACE "/" "\\" _srcGroupName ${folder})
+        set(_srcGroupFilesList "${_srcGroupName}_files")
+        set(${_srcGroupName}_FILES ${${_srcGroupName}_FILES} ${_srcFile})
+        list(LENGTH ${_srcGroupName}_FILES _currentGroupSize)
+        if (${_currentGroupSize} EQUAL 1)
+            set(_sourceGroups ${_sourceGroups} ${_srcGroupName})
+        endif ()
+    endforeach ()
+    foreach (_srcGroup ${_sourceGroups})
+        if (${CMAKE_VERBOSE_MAKEFILE})
+            message("adding source group ${_srcGroup}")
+            message("files in group:${${_srcGroup}_FILES}")
+        endif (${CMAKE_VERBOSE_MAKEFILE})
+        source_group(${_srcGroup} FILES ${${_srcGroup}_FILES})
+    endforeach ()
+    source_group("" FILES ${_NoSrcGroupFiles})
+endmacro(OrganizeSources)
+
+OrganizeSources(${SOURCE_FILES})
 
 # Build
 

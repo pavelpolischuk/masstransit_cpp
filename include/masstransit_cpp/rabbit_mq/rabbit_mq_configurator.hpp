@@ -12,7 +12,6 @@ namespace masstransit_cpp
 	
 	class MASSTRANSIT_CPP_EXPORT rabbit_mq_configurator
 	{
-
 	public:
 		explicit rabbit_mq_configurator();
 
@@ -24,7 +23,7 @@ namespace masstransit_cpp
 
 		std::shared_ptr<bus> build();
 	
-	protected:
+	private:
 		std::map<std::string, rabbit_mq::receive_endpoint_configurator> receive_endpoints_;
 		bool auto_delete_{ false };
 		host_info client_info_;

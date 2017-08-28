@@ -11,6 +11,8 @@ namespace masstransit_cpp
     class MASSTRANSIT_CPP_EXPORT tasks_queue
     {
     public:
+		virtual ~tasks_queue() = default;
+
         template<class F, class... Args>
         auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>
 		{

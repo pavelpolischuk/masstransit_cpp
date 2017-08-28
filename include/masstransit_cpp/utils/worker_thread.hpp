@@ -9,7 +9,7 @@ namespace masstransit_cpp
 	public:
 		worker_thread();
 
-		~worker_thread();
+		virtual ~worker_thread();
 
 	protected:
 		worker worker_;

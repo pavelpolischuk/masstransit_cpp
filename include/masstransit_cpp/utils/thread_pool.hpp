@@ -11,7 +11,7 @@ namespace masstransit_cpp
     public:
         explicit thread_pool(size_t pool_size);
 
-		~thread_pool();
+		virtual ~thread_pool();
 
     private:
         std::list<worker> workers_;

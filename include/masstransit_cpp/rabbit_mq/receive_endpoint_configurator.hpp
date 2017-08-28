@@ -5,6 +5,7 @@
 #include <masstransit_cpp/i_receive_endpoint_configurator.hpp>
 #include <masstransit_cpp/rabbit_mq/amqp_host.hpp>
 
+#include <boost/date_time/posix_time/posix_time_duration.hpp>
 #include <memory>
 
 namespace masstransit_cpp
@@ -21,12 +22,14 @@ namespace masstransit_cpp
 
 			receive_endpoint_configurator & auto_delete(bool is);
 			receive_endpoint_configurator & prefetch_count(uint16_t count);
+			receive_endpoint_configurator & poll_timeout(boost::posix_time::time_duration const& timeout);
 
 			std::shared_ptr<receive_endpoint> build();
 
 		protected:
 			bool auto_delete_{ false };
 			uint16_t prefetch_count_{ 1 };
+			boost::posix_time::time_duration timeout_{ boost::posix_time::milliseconds(500) };
 
 			amqp_host host_;
 		};

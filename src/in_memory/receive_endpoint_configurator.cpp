@@ -14,6 +14,12 @@ namespace masstransit_cpp
 		{
 		}
 
+		receive_endpoint_configurator& receive_endpoint_configurator::transport_concurrency_limit(size_t limit)
+		{
+			transport_concurrency_limit_ = limit;
+			return *this;
+		}
+
 		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build()
 		{
 			return nullptr;
