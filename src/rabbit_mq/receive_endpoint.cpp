@@ -10,11 +10,11 @@ namespace masstransit_cpp
 	{
 		receive_endpoint::receive_endpoint(boost::shared_ptr<AmqpClient::Channel> const& channel, std::string const& queue, uint16_t prefetch_count,
 			boost::posix_time::time_duration const& timeout, consumers_map const& consumers_by_type)
-			: queue_(queue)
+			: i_receive_endpoint(consumers_by_type)
+			, queue_(queue)
 			, prefetch_count_(prefetch_count)
 			, timeout_ms_(get_ms(timeout))
 			, channel_(channel)
-			, consumers_by_type_(consumers_by_type)
 		{
 		}
 
@@ -69,18 +69,6 @@ namespace masstransit_cpp
 			}
 
 			tag_ = channel_->BasicConsume(queue_, "", true, false, true, prefetch_count_);
-		}
-
-		std::shared_ptr<i_message_consumer> receive_endpoint::find_consumer(std::vector<std::string> const& message_types) const
-		{
-			for (auto const& message_type : message_types)
-			{
-				auto consumer = consumers_by_type_.find(message_type);
-				if (consumer != consumers_by_type_.end())
-					return consumer->second;
-			}
-
-			return nullptr;
 		}
 
 		int receive_endpoint::get_ms(boost::posix_time::time_duration const& timeout)

@@ -16,7 +16,12 @@ namespace masstransit_cpp
 			receive_endpoint_configurator(std::string const& queue_name);
 			~receive_endpoint_configurator() override;
 
+			receive_endpoint_configurator & transport_concurrency_limit(size_t limit);
+
 			std::shared_ptr<receive_endpoint> build();
+		
+		private:
+			size_t transport_concurrency_limit_{ 1 };
 		};
 	}
 }

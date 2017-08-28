@@ -8,50 +8,49 @@ namespace masstransit_cpp_tests
 	using namespace std;
 	using namespace masstransit_cpp;
 
-	
-	void work(thread::id & thread_id)
-	{
-		thread_id = this_thread::get_id();
-	}
-
 	TEST_CASE("worker_tests", "[worker]")
 	{
 		SECTION("worker_do_task_on_other_thread")
 		{
 			tasks_queue q;
-			auto w = make_shared<worker>(q);
+			worker w(q);
 
 			auto thread_id(this_thread::get_id());
 			q.enqueue([&thread_id]
 			{
 				thread_id = this_thread::get_id();
-			});
-
-			this_thread::sleep_for(chrono::milliseconds(40));
+			}).get();
+			
+			this_thread::sleep_for(chrono::milliseconds(50));
 			q.stop();
 			
-			w.reset();
-
 			REQUIRE(thread_id != this_thread::get_id());
 		}
 
-		SECTION("thread_pull_do_tasks_on_other_thread")
+		SECTION("worker_thread_do_tasks_on_other_thread")
 		{
-			auto th = make_shared<worker_thread>();
-
+			worker_thread th;
 			auto thread_id_1(this_thread::get_id());
 			auto thread_id_2(this_thread::get_id());
-			th->enqueue([&thread_id_1]
+
+			mutex mutex_; mutex_.lock();
+			auto task_1 = th.enqueue([&thread_id_1, &mutex_]
 			{
+				unique_lock<mutex> lock(mutex_);
 				thread_id_1 = this_thread::get_id();
 			});
 			
-			th->enqueue([&thread_id_2]
+			auto task_2 = th.enqueue([&thread_id_2, &mutex_]
 			{
+				unique_lock<mutex> lock(mutex_);
 				thread_id_2 = this_thread::get_id();
 			});
 
-			th.reset();
+			this_thread::sleep_for(chrono::milliseconds(50));
+			mutex_.unlock();
+
+			task_1.get();
+			task_2.get();
 
 			REQUIRE(thread_id_1 != this_thread::get_id());
 			REQUIRE(thread_id_2 != this_thread::get_id());
@@ -60,21 +59,29 @@ namespace masstransit_cpp_tests
 
 		SECTION("thread_pool_do_tasks_on_other_diff_threads")
 		{
-			auto th = make_shared<thread_pool>(3);
+			thread_pool th(3);
 
 			auto thread_id_1(this_thread::get_id());
 			auto thread_id_2(this_thread::get_id());
-			th->enqueue([&thread_id_1]
+			
+			mutex mutex_; mutex_.lock();
+			auto task_1 = th.enqueue([&thread_id_1, &mutex_]
 			{
+				unique_lock<mutex> lock(mutex_);
 				thread_id_1 = this_thread::get_id();
 			});
 			
-			th->enqueue([&thread_id_2]
+			auto task_2 = th.enqueue([&thread_id_2, &mutex_]
 			{
+				unique_lock<mutex> lock(mutex_);
 				thread_id_2 = this_thread::get_id();
 			});
 
-			th.reset();
+			this_thread::sleep_for(chrono::milliseconds(50));
+			mutex_.unlock();
+
+			task_1.get();
+			task_2.get();
 
 			REQUIRE(thread_id_1 != this_thread::get_id());
 			REQUIRE(thread_id_2 != this_thread::get_id());

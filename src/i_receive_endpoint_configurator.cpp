@@ -6,13 +6,7 @@ namespace masstransit_cpp
 		: queue_(queue_name)
 	{
 	}
-
-	i_receive_endpoint_configurator& i_receive_endpoint_configurator::poll_timeout(boost::posix_time::time_duration const& timeout)
-	{
-		timeout_ = timeout;
-		return *this;
-	}
-
+	
 	void i_receive_endpoint_configurator::add_consumer_factory(std::string const& message_type, std::function<std::shared_ptr<i_message_consumer>()> const& factory)
 	{
 		consumers_factories_by_type_["urn:message:" + message_type] = factory;

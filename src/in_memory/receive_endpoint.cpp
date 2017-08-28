@@ -6,8 +6,8 @@ namespace masstransit_cpp
 {
 	namespace in_memory
 	{
-		receive_endpoint::receive_endpoint(std::map<std::string, std::shared_ptr<i_message_consumer>> const& consumers_by_type)
-			: consumers_by_type_(consumers_by_type)
+		receive_endpoint::receive_endpoint(consumers_map const& consumers_by_type)
+			: i_receive_endpoint(consumers_by_type)
 		{
 		}
 
@@ -38,18 +38,6 @@ namespace masstransit_cpp
 			}
 
 			return true;
-		}
-
-		std::shared_ptr<i_message_consumer> receive_endpoint::find_consumer(std::vector<std::string> const& message_types) const
-		{
-			for (auto const& message_type : message_types)
-			{
-				auto consumer = consumers_by_type_.find(message_type);
-				if (consumer != consumers_by_type_.end())
-					return consumer->second;
-			}
-
-			return nullptr;
 		}
 	}
 }

@@ -29,6 +29,12 @@ namespace masstransit_cpp
 			return *this;
 		}
 
+		receive_endpoint_configurator& receive_endpoint_configurator::poll_timeout(boost::posix_time::time_duration const& timeout)
+		{
+			timeout_ = timeout;
+			return *this;
+		}
+
 		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build()
 		{
 			auto channel = AmqpClient::Channel::CreateFromUri(host_.to_string());
