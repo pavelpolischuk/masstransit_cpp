@@ -60,9 +60,10 @@ namespace masstransit_cpp_tests
 
 
 			bus->start();
-			bus->publish(message_mock(42));
+			auto published = bus->publish(message_mock(42)).get();
 			bus->stop();
 
+			REQUIRE(published);
 			REQUIRE(consumer_mock->saved_value.get_value_or(0) == 42);
 		}
 	}
