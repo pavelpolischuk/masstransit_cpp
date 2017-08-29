@@ -6,6 +6,7 @@
 #include <masstransit_cpp/rabbit_mq/receive_endpoint.hpp>
 #include <masstransit_cpp/rabbit_mq/amqp_host.hpp>
 #include <masstransit_cpp/rabbit_mq/exchange_manager.hpp>
+#include <masstransit_cpp/threads/task_repeat.hpp>
 
 namespace masstransit_cpp
 {
@@ -15,9 +16,10 @@ namespace masstransit_cpp
 		rabbit_mq_bus(amqp_host const& target_host, host_info const& client_info, std::shared_ptr<exchange_manager> const& exchange_manager, std::vector<std::shared_ptr<rabbit_mq::receive_endpoint>> const& receivers);
 		~rabbit_mq_bus() override;
 
-	protected:
-		void run() override;
+		void start() override;
+		void stop() override;
 
+	protected:
 		void publish_impl(consume_context_info const& message, std::string const& type) const override;
 
 	private:
@@ -26,5 +28,9 @@ namespace masstransit_cpp
 		std::vector<std::shared_ptr<rabbit_mq::receive_endpoint>> receivers_;
 		amqp_host target_host_;
 		host_info client_info_;
+
+		std::unique_ptr<threads::task_repeat> loop_;
+
+		bool process_input_messages();
 	};
 }

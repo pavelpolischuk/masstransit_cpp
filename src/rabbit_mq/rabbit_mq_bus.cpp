@@ -21,19 +21,17 @@ namespace masstransit_cpp
 	{
 	}
 
-	void rabbit_mq_bus::run()
+	void rabbit_mq_bus::start()
 	{
-		while (working)
-		{
-			auto smth_consumed = false;
-			for (auto & q : receivers_)
-			{
-				if (q->try_consume())
-					smth_consumed = true;
-			}
+		loop_ = std::make_unique<threads::task_repeat>(std::chrono::seconds(15), &rabbit_mq_bus::process_input_messages, this);
+	}
 
-			if (!smth_consumed && working)
-				std::this_thread::sleep_for(std::chrono::seconds(15));
+	void rabbit_mq_bus::stop()
+	{
+		if (loop_ != nullptr)
+		{
+			loop_->stop();
+			loop_ = nullptr;
 		}
 	}
 
@@ -64,5 +62,17 @@ namespace masstransit_cpp
 		{
 			BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: unknown";
 		}
+	}
+
+	bool rabbit_mq_bus::process_input_messages()
+	{
+		auto smth_consumed = false;
+		for (auto & q : receivers_)
+		{
+			if (q->try_consume())
+				smth_consumed = true;
+		}
+
+		return smth_consumed;
 	}
 }
