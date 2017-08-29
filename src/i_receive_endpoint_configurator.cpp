@@ -12,7 +12,7 @@ namespace masstransit_cpp
 		consumers_factories_by_type_["urn:message:" + message_type] = factory;
 	}
 
-	i_receive_endpoint_configurator::consumers_map i_receive_endpoint_configurator::create_consumers() const
+	auto i_receive_endpoint_configurator::create_consumers() const -> consumers_map
 	{
 		consumers_map consumers;
 		for (auto const& f : consumers_factories_by_type_)
