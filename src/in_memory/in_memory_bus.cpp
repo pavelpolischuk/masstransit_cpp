@@ -20,7 +20,8 @@ namespace masstransit_cpp
 	{
 	}
 
-	void in_memory_bus::publish_impl(consume_context_info const& message, std::string const& type) const
+	std::future<bool> in_memory_bus::publish_impl(consume_context_info const& message, std::string const& type) const
 	{
+		return std::future<bool>();
 	}
 }

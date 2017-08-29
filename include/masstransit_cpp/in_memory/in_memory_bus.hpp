@@ -15,6 +15,6 @@ namespace masstransit_cpp
 		void stop() override;
 
 	protected:
-		void publish_impl(consume_context_info const& message, std::string const& type) const override;
+		std::future<bool> publish_impl(consume_context_info const& message, std::string const& type) const override;
 	};
 }
