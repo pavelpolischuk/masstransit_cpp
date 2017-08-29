@@ -11,9 +11,10 @@ namespace masstransit_cpp
 		in_memory_bus();
 		~in_memory_bus() override;
 
-	protected:
-		void run() override;
+		void start() override;
+		void stop() override;
 
+	protected:
 		void publish_impl(consume_context_info const& message, std::string const& type) const override;
 	};
 }

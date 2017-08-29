@@ -29,7 +29,7 @@ namespace masstransit_cpp_tests
 
 				bus_configurator.receive_endpoint(host, "Test.AppName", [=](rabbit_mq::receive_endpoint_configurator & conf)
 				{
-					conf.consumer<message_mock>(consumer_mock);
+					conf.consumer<message_mock>(std::static_pointer_cast<message_consumer<message_mock>, message_consumer_mock>(consumer_mock));
 					conf.poll_timeout(boost::posix_time::millisec(300));
 					conf.auto_delete(true);
 				});
@@ -52,7 +52,7 @@ namespace masstransit_cpp_tests
 
 				bus_configurator.receive_endpoint(host, "Test.AppName", [=](rabbit_mq::receive_endpoint_configurator & conf)
 				{
-					conf.consumer<message_mock>(consumer_mock);
+					conf.consumer<message_mock>(std::static_pointer_cast<message_consumer<message_mock>, message_consumer_mock>(consumer_mock));
 					conf.poll_timeout(boost::posix_time::seconds(2));
 					conf.auto_delete(true);
 				});

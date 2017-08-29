@@ -64,12 +64,12 @@ set(SOURCE_FILES
 	include/masstransit_cpp/in_memory/in_memory_configurator.hpp
 	include/masstransit_cpp/in_memory/receive_endpoint.hpp
 	include/masstransit_cpp/in_memory/receive_endpoint_configurator.hpp
-	include/masstransit_cpp/utils/tasks_queue.hpp
-	include/masstransit_cpp/utils/thread_pool.hpp
-	include/masstransit_cpp/utils/worker.hpp
-	include/masstransit_cpp/utils/worker_thread.hpp
+	include/masstransit_cpp/threads/tasks_queue.hpp
+	include/masstransit_cpp/threads/thread_pool.hpp
+	include/masstransit_cpp/threads/worker.hpp
+	include/masstransit_cpp/threads/worker_thread.hpp
+	include/masstransit_cpp/threads/task_repeat.hpp
 	
-	src/bus_control.cpp
 	src/bus_factory.cpp
 	src/consume_context.cpp
 	src/exchange_manager.cpp
@@ -86,9 +86,9 @@ set(SOURCE_FILES
 	src/rabbit_mq/rabbit_mq_configurator.cpp
 	src/rabbit_mq/receive_endpoint.cpp
 	src/rabbit_mq/receive_endpoint_configurator.cpp
-	src/utils/thread_pool.cpp
-	src/utils/worker.cpp
-	src/utils/worker_thread.cpp
+	src/threads/thread_pool.cpp
+	src/threads/worker.cpp
+	src/threads/worker_thread.cpp
 	)
 
 macro(OrganizeSources)

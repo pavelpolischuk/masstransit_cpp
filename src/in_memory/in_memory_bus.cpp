@@ -12,7 +12,11 @@ namespace masstransit_cpp
 	{
 	}
 
-	void in_memory_bus::run()
+	void in_memory_bus::start()
+	{
+	}
+
+	void in_memory_bus::stop()
 	{
 	}
 

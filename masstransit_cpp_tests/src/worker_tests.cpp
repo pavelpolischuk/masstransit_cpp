@@ -1,12 +1,13 @@
 #include "catch.hpp"
 
-#include <masstransit_cpp/utils/worker_thread.hpp>
-#include <masstransit_cpp/utils/thread_pool.hpp>
+#include <masstransit_cpp/threads/worker_thread.hpp>
+#include <masstransit_cpp/threads/thread_pool.hpp>
+#include <masstransit_cpp/threads/task_repeat.hpp>
 
 namespace masstransit_cpp_tests
 {
 	using namespace std;
-	using namespace masstransit_cpp;
+	using namespace masstransit_cpp::threads;
 
 	TEST_CASE("worker_tests", "[worker]")
 	{
@@ -86,6 +87,30 @@ namespace masstransit_cpp_tests
 			REQUIRE(thread_id_1 != this_thread::get_id());
 			REQUIRE(thread_id_2 != this_thread::get_id());
 			REQUIRE(thread_id_1 != thread_id_2);
+		}
+		
+		SECTION("task_repeate_wait_3_times")
+		{
+			auto count = 0;
+			task_repeat th(chrono::milliseconds(80), [&count]() { ++count; return false; });
+			
+			this_thread::sleep_for(chrono::milliseconds(200));
+			
+			th.stop();
+
+			REQUIRE(count == 3);
+		}
+
+		SECTION("task_repeate_do_3_times_before_timeout")
+		{
+			auto count = 0;
+			task_repeat th(chrono::seconds(2), [&count]() { return ++count <= 2; });
+			
+			this_thread::sleep_for(chrono::milliseconds(100));
+			
+			th.stop();
+
+			REQUIRE(count == 3);
 		}
 	}
 }
