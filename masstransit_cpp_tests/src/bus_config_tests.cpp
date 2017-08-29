@@ -13,13 +13,13 @@ namespace masstransit_cpp_tests
 
 	TEST_CASE("bus_config_tests", "[bus_config]")
 	{
-		SECTION( "ctor_make_context_info_from_json" ) 
+		SECTION( "configure_bus" ) 
 		{
 			auto consumer_mock = std::make_shared<message_consumer_mock>();
 			
 			bus_factory::create_using_rabbit_mq([=](rabbit_mq_configurator & bus_configurator)
 			{
-				auto host = bus_configurator.host(amqp_uri("localhost"), [](amqp_host_configurator & host_configurator)
+				auto host = bus_configurator.host(amqp_uri("localhost"), [](auto & host_configurator)
 				{
 					host_configurator.username("guest");
 					host_configurator.password("guest");
@@ -27,11 +27,11 @@ namespace masstransit_cpp_tests
 				
 				bus_configurator.auto_delete(true);
 
-				bus_configurator.receive_endpoint(host, "Test.AppName", [=](rabbit_mq::receive_endpoint_configurator & conf)
+				bus_configurator.receive_endpoint(host, "Test.AppName", [=](auto & endpoint_configurator)
 				{
-					conf.consumer<message_mock>(std::static_pointer_cast<message_consumer<message_mock>, message_consumer_mock>(consumer_mock));
-					conf.poll_timeout(boost::posix_time::millisec(300));
-					conf.auto_delete(true);
+					endpoint_configurator.consumer<message_mock>(std::static_pointer_cast<message_consumer<message_mock>, message_consumer_mock>(consumer_mock));
+					endpoint_configurator.poll_timeout(boost::posix_time::millisec(300));
+					endpoint_configurator.auto_delete(true);
 				});
 			});
     	}
@@ -42,7 +42,7 @@ namespace masstransit_cpp_tests
 
 			auto bus = bus_factory::create_using_rabbit_mq([=](rabbit_mq_configurator & bus_configurator)
 			{
-				auto host = bus_configurator.host(amqp_uri("localhost"), [](amqp_host_configurator & host_configurator)
+				auto host = bus_configurator.host(amqp_uri("localhost"), [](auto & host_configurator)
 				{
 					host_configurator.username("guest");
 					host_configurator.password("guest");
@@ -50,11 +50,11 @@ namespace masstransit_cpp_tests
 
 				bus_configurator.auto_delete(true);
 
-				bus_configurator.receive_endpoint(host, "Test.AppName", [=](rabbit_mq::receive_endpoint_configurator & conf)
+				bus_configurator.receive_endpoint(host, "Test.AppName", [=](auto & endpoint_configurator)
 				{
-					conf.consumer<message_mock>(std::static_pointer_cast<message_consumer<message_mock>, message_consumer_mock>(consumer_mock));
-					conf.poll_timeout(boost::posix_time::seconds(2));
-					conf.auto_delete(true);
+					endpoint_configurator.consumer<message_mock>(std::static_pointer_cast<message_consumer<message_mock>, message_consumer_mock>(consumer_mock));
+					endpoint_configurator.poll_timeout(boost::posix_time::seconds(2));
+					endpoint_configurator.auto_delete(true);
 				});
 			});
 
