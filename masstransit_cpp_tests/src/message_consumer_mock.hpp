@@ -13,6 +13,7 @@ namespace masstransit_cpp_tests
 	public:
 		boost::optional<int> saved_value;
 
+		message_consumer_mock(){}
 		~message_consumer_mock() override = default;
 		
 		void consume(consume_context<message_mock> const& context) override;

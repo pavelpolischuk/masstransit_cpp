@@ -51,6 +51,7 @@ set(SOURCE_FILES
 	include/masstransit_cpp/i_publish_endpoint.hpp
 	include/masstransit_cpp/json.hpp
 	include/masstransit_cpp/message_consumer.hpp
+	include/masstransit_cpp/message_handler.hpp
 	include/masstransit_cpp/i_receive_endpoint.hpp
 	include/masstransit_cpp/i_receive_endpoint_configurator.hpp
 
