@@ -1,7 +1,7 @@
 #pragma once
 
 #include <masstransit_cpp/global.hpp>
-#include <masstransit_cpp/message_consumer.hpp>
+#include <masstransit_cpp/message_handler.hpp>
 
 namespace masstransit_cpp
 {
@@ -22,9 +22,27 @@ namespace masstransit_cpp
 		}
 
 		template<class message_t>
+		i_receive_endpoint_configurator & handler(std::function<void(consume_context<message_t> const&)> const& handler)
+		{
+			return this->consumer<message_t>(std::make_shared<message_handler<message_t>>(handler));
+		}
+
+		template<class message_t, class boost_di_container_t>
+		i_receive_endpoint_configurator & load_from(boost_di_container_t const& container)
+		{
+			return this->consumer<message_t>([&container]() -> std::shared_ptr<message_consumer<message_t>>
+			{
+				return container.template create<std::shared_ptr<message_consumer<message_t>>>();
+			});
+		}
+
+		template<class message_t>
 		i_receive_endpoint_configurator & consumer(std::shared_ptr<message_consumer<message_t>> const& consumer_instance)
 		{
-			return this->consumer<message_t>([consumer_instance]() -> std::shared_ptr<message_consumer<message_t>> { return consumer_instance; });
+			return this->consumer<message_t>([consumer_instance]() -> std::shared_ptr<message_consumer<message_t>> 
+			{ 
+				return consumer_instance; 
+			});
 		}
 
 	protected:

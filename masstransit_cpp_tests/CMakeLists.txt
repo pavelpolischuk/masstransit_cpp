@@ -1,5 +1,19 @@
 include_directories(../include)
 
+set(CXX_STANDARD "c++14")
+
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -fno-exceptions -pedantic -pedantic-errors -Wall -Wextra -Werror")
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -fno-exceptions -pedantic -pedantic-errors -Wall -Wextra -Werror")
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /EHsc")
+else()
+    message(WARNING "Unsupported compiler!")
+endif()
+
+include_directories(${BOOST_DI_DIR}/include)
+
 add_executable(masstransit_cpp_tests 
 	src/catch.hpp
 	src/message_mock.hpp
