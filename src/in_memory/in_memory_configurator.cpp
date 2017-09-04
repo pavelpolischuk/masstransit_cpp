@@ -32,6 +32,12 @@ namespace masstransit_cpp
 
 	std::shared_ptr<bus> in_memory_configurator::build()
 	{
+		std::vector<receive_endpoint::builder> receivers_builders;
+		for (auto & receive_factory : receive_endpoints_)
+		{
+			receivers_builders.push_back(receive_factory.second.get_builder());
+		}
+
 		return std::make_shared<in_memory_bus>();
 	}
 }

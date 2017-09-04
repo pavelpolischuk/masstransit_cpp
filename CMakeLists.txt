@@ -61,6 +61,7 @@ set(SOURCE_FILES
 	include/masstransit_cpp/rabbit_mq/receive_endpoint.hpp
 	include/masstransit_cpp/rabbit_mq/receive_endpoint_configurator.hpp
 	include/masstransit_cpp/rabbit_mq/amqp_host.hpp
+	include/masstransit_cpp/in_memory/exchange_manager.hpp
 	include/masstransit_cpp/in_memory/in_memory_bus.hpp
 	include/masstransit_cpp/in_memory/in_memory_configurator.hpp
 	include/masstransit_cpp/in_memory/receive_endpoint.hpp
@@ -73,16 +74,17 @@ set(SOURCE_FILES
 	
 	src/bus_factory.cpp
 	src/consume_context.cpp
-	src/exchange_manager.cpp
 	src/host_info.cpp
 	src/i_receive_endpoint.cpp
 	src/i_receive_endpoint_configurator.cpp
 
+	src/in_memory/exchange_manager.cpp
 	src/in_memory/receive_endpoint.cpp
 	src/in_memory/receive_endpoint_configurator.cpp
 	src/in_memory/in_memory_bus.cpp
 	src/in_memory/in_memory_configurator.cpp
 	src/rabbit_mq/amqp_host.cpp
+	src/rabbit_mq/exchange_manager.cpp
 	src/rabbit_mq/rabbit_mq_bus.cpp
 	src/rabbit_mq/rabbit_mq_configurator.cpp
 	src/rabbit_mq/receive_endpoint.cpp

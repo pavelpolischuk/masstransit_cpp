@@ -1,4 +1,5 @@
 #include "masstransit_cpp/in_memory/receive_endpoint.hpp"
+#include "masstransit_cpp/in_memory/exchange_manager.hpp"
 
 #include <boost/log/trivial.hpp>
 
@@ -6,8 +7,9 @@ namespace masstransit_cpp
 {
 	namespace in_memory
 	{
-		receive_endpoint::receive_endpoint(consumers_map const& consumers_by_type)
+		receive_endpoint::receive_endpoint(std::string const& queue, consumers_map const& consumers_by_type)
 			: i_receive_endpoint(consumers_by_type)
+			, queue_(queue)
 		{
 		}
 
@@ -38,6 +40,10 @@ namespace masstransit_cpp
 			}
 
 			return true;
+		}
+
+		void receive_endpoint::bind_queues(std::shared_ptr<exchange_manager> const& exchange_manager)
+		{
 		}
 	}
 }

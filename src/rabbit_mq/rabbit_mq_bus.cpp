@@ -10,7 +10,7 @@
 namespace masstransit_cpp
 {
 	rabbit_mq_bus::rabbit_mq_bus(amqp_host const& target_host, host_info const& client_info,
-		std::shared_ptr<exchange_manager> const& exchange_manager,
+		std::shared_ptr<rabbit_mq::exchange_manager> const& exchange_manager,
 		std::vector<rabbit_mq::receive_endpoint::builder> const& receivers_builders)
 		: exchange_manager_(exchange_manager)
 		, receivers_builders_(receivers_builders)

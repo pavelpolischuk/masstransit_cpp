@@ -20,9 +20,14 @@ namespace masstransit_cpp
 			return *this;
 		}
 
-		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build()
+		receive_endpoint::builder receive_endpoint_configurator::get_builder() const
 		{
-			return nullptr;
+			return bind(&build, *this);
+		}
+
+		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build(receive_endpoint_configurator configuration)
+		{
+			return std::make_shared<receive_endpoint>(configuration.queue_, configuration.create_consumers());
 		}
 	}
 }
