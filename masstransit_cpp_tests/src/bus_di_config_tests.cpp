@@ -1,4 +1,4 @@
-#include "message_mock.hpp"
+#include "message_consumer_depend.hpp"
 #include "catch.hpp"
 
 #include <masstransit_cpp/bus.hpp>
@@ -7,14 +7,22 @@
 #include <masstransit_cpp/rabbit_mq/amqp_host.hpp>
 #include <masstransit_cpp/rabbit_mq/rabbit_mq_configurator.hpp>
 #include <masstransit_cpp/rabbit_mq/receive_endpoint_configurator.hpp>
-#include <boost/optional/optional.hpp>
 #include <boost/di.hpp>
+
+namespace mtc = masstransit_cpp;
+namespace di = boost::di;
+
+namespace boost {
+	namespace di {
+		template <>
+		struct ctor_traits<masstransit_cpp_tests::message_consumer_depend> {
+			BOOST_DI_INJECT_TRAITS(std::shared_ptr<mtc::i_publish_endpoint> const&);
+		};
+	}
+}
 
 namespace masstransit_cpp_tests
 {
-	namespace mtc = masstransit_cpp;
-	namespace di = boost::di;
-
 	template<class injector_t>
 	std::shared_ptr<mtc::bus> get_bus(injector_t const& injector)
 	{
@@ -40,55 +48,18 @@ namespace masstransit_cpp_tests
 		return bus;
 	}
 
-	class depend_message_consumer : public mtc::message_consumer<message_mock>
-	{
-	public:
-		boost::optional<int> saved_value;
-
-		BOOST_DI_INJECT(depend_message_consumer, std::shared_ptr<mtc::i_publish_endpoint> const& bus)
-			: bus_(bus)
-		{}
-		
-		~depend_message_consumer() override = default;
-
-		void consume(mtc::consume_context<message_mock> const& context) override
-		{
-			if (context.message.id == 42)
-			{
-				bus_->publish(message_mock(43));
-				return;
-			}
-			
-			{
-				std::unique_lock<std::mutex> lock(mutex_);
-				saved_value = context.message.id; 
-			}
-				
-			condition_.notify_all();
-		}
-
-		void wait()
-		{
-			std::unique_lock<std::mutex> lock(mutex_);
-			condition_.wait_for(lock, std::chrono::seconds(2), [this]{ return saved_value != boost::none; });
-		}
-
-	private:
-		std::mutex mutex_;
-		std::condition_variable condition_;
-		std::shared_ptr<mtc::i_publish_endpoint> bus_;
-	};
+	
 
 	TEST_CASE("di_config_bus_then_send_message_and_receive_tests", "[bus_config_2]")
 	{
 		auto container = di::make_injector(
 			di::bind<mtc::i_publish_endpoint>().to([](auto const& injector) -> std::shared_ptr<mtc::i_publish_endpoint> { return get_bus(injector); }),
 			di::bind<mtc::bus>().to([](auto const& injector) { return get_bus(injector); }),
-			di::bind<mtc::message_consumer<message_mock>, depend_message_consumer>().to<depend_message_consumer>()
+			di::bind<mtc::message_consumer<message_mock>, message_consumer_depend>().to<message_consumer_depend>()
 		);
 
 		auto bus = container.create<std::shared_ptr<mtc::bus>>();
-		auto consumer = container.create<std::shared_ptr<depend_message_consumer>>();
+		auto consumer = container.create<std::shared_ptr<message_consumer_depend>>();
 
 		bus->start();
 		
