@@ -3,6 +3,7 @@
 #include <masstransit_cpp/global.hpp>
 #include <masstransit_cpp/message_consumer.hpp>
 #include <masstransit_cpp/i_receive_endpoint_configurator.hpp>
+#include <masstransit_cpp/in_memory/receive_endpoint.hpp>
 
 namespace masstransit_cpp
 {
@@ -18,10 +19,12 @@ namespace masstransit_cpp
 
 			receive_endpoint_configurator & transport_concurrency_limit(size_t limit);
 
-			std::shared_ptr<receive_endpoint> build();
+			receive_endpoint::builder get_builder() const;
 		
 		private:
 			size_t transport_concurrency_limit_{ 1 };
+
+			static std::shared_ptr<receive_endpoint> build(receive_endpoint_configurator configuration);
 		};
 	}
 }

@@ -9,7 +9,7 @@ namespace AmqpClient { class Channel; }
 
 namespace masstransit_cpp
 {
-	namespace rabbit_mq
+	namespace in_memory
 	{
 		class MASSTRANSIT_CPP_EXPORT exchange_manager
 		{

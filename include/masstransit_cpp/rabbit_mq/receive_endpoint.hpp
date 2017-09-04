@@ -11,10 +11,10 @@ namespace AmqpClient { class Channel; }
 
 namespace masstransit_cpp
 {
-	class exchange_manager;
-
 	namespace rabbit_mq
 	{
+		class exchange_manager;
+
 		class MASSTRANSIT_CPP_EXPORT receive_endpoint : public i_receive_endpoint
 		{
 		public:
