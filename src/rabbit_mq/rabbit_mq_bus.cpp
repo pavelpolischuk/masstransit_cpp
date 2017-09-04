@@ -11,9 +11,9 @@ namespace masstransit_cpp
 {
 	rabbit_mq_bus::rabbit_mq_bus(amqp_host const& target_host, host_info const& client_info,
 		std::shared_ptr<exchange_manager> const& exchange_manager,
-		std::vector<std::shared_ptr<rabbit_mq::receive_endpoint>> const& receivers)
+		std::vector<rabbit_mq::receive_endpoint::builder> const& receivers_builders)
 		: exchange_manager_(exchange_manager)
-		, receivers_(receivers)
+		, receivers_builders_(receivers_builders)
 		, target_host_(target_host)
 		, client_info_(client_info)
 	{
@@ -26,6 +26,13 @@ namespace masstransit_cpp
 
 	void rabbit_mq_bus::start()
 	{
+		for (auto const& b : receivers_builders_)
+		{
+			auto receiver = b();
+			receiver->bind_queues(exchange_manager_);
+			receivers_.push_back(receiver);
+		}
+
 		receiving_loop_ = std::make_unique<threads::task_repeat>(std::chrono::seconds(15), &rabbit_mq_bus::process_input_messages, this);
 		publish_worker_ = std::make_unique<threads::worker_thread>();
 	}
@@ -34,6 +41,7 @@ namespace masstransit_cpp
 	{
 		receiving_loop_ = nullptr;
 		publish_worker_ = nullptr;
+		receivers_.clear();
 	}
 
 	std::future<bool> rabbit_mq_bus::publish_impl(consume_context_info const& m, std::string const& t) const

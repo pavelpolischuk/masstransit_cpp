@@ -1,4 +1,5 @@
 include_directories(../include)
+include_directories(${BOOST_DI_DIR}/include)
 
 set(CXX_STANDARD "c++14")
 
@@ -12,8 +13,6 @@ else()
     message(WARNING "Unsupported compiler!")
 endif()
 
-include_directories(${BOOST_DI_DIR}/include)
-
 add_executable(masstransit_cpp_tests 
 	src/catch.hpp
 	src/message_mock.hpp
@@ -23,6 +22,7 @@ add_executable(masstransit_cpp_tests
 	src/message_mock.cpp
 	src/consume_context_tests.cpp
 	src/bus_config_tests.cpp
+	src/bus_di_config_tests.cpp
 	src/amqp_host_tests.cpp
 	src/worker_tests.cpp
 )

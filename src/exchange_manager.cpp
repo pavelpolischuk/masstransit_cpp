@@ -5,9 +5,13 @@
 
 namespace masstransit_cpp
 {
-	void exchange_manager::auto_delete(bool is)
+	exchange_manager::exchange_manager(bool auto_delete)
+		: auto_delete_(auto_delete)
+	{}
+
+	bool exchange_manager::has_exchange(std::string const& type) const
 	{
-		auto_delete_ = is;
+		return exchanges_.count(type) > 0;
 	}
 
 	void exchange_manager::declare_message_type(std::string const& type, boost::shared_ptr<AmqpClient::Channel> const& channel)

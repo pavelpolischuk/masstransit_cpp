@@ -34,9 +34,7 @@ Consumer have to extend `masstrasit_cpp::message_consumer<message_t>` and overri
 
 class my_message_consumer : public masstrasit_cpp::message_consumer<my_message> {
 
-public:
-	~my_message_consumer() override {}
-	
+public:	
 	void consume(masstrasit_cpp::consume_context<my_message> const& context) override {
 	    std::cout << "Consume " << context.message.data_1 << ":" << context.message.data_2 << std::endl;
 	}
@@ -54,7 +52,6 @@ using namespace masstransit_cpp;
 void main() {
 
 auto one_consumer = std::make_shared<my_consumer>();
-
 auto bus = masstransit_cpp::bus_factory::create_using_rabbit_mq([=](masstransit_cpp::rabbit_mq_configurator & bus_configurator) {
     		
     			auto host = bus_configurator.host(masstransit_cpp::amqp_uri("127.0.0.1"), [](auto & host_configurator) {
@@ -66,7 +63,7 @@ auto bus = masstransit_cpp::bus_factory::create_using_rabbit_mq([=](masstransit_
     				endpoint_configurator.consumer<my_message>(one_consumer);   // set consumer for message
     				
     				endpoint_configurator.handler<my_message>(                  // OR set handler for message
-    				                [=](mtc::consume_context<my_message> const& context) {
+    				                [=](masstrasit_cpp::consume_context<my_message> const& context) {
 			                            std::cout << "Handle " << context.message.data_1 << ":" << context.message.data_2 << std::endl;
 		                            });
     			});
@@ -120,20 +117,18 @@ class dependent_consumer : public masstrasit_cpp::message_consumer<my_message> {
     std::shared_ptr<masstrasit_cpp::i_publish_endpoint> bus_;
     
 public:
-    dependent_consumer(std::shared_ptr<masstrasit_cpp::i_publish_endpoint> const& bus)
+    BOOST_DI_INJECT(dependent_consumer, std::shared_ptr<masstrasit_cpp::i_publish_endpoint> const& bus)
         : bus_(bus) {}
-	~my_message_consumer() override {}
 	
 	void consume(masstrasit_cpp::consume_context<my_message> const& context) override {
-	    bus_->publish(next_message());
+	    bus_->publish(next_message(43));
 	}
 };
 
 
 template<class injector_t>
-std::shared_ptr<masstrasit_cpp::bus> create_bus(injector_t const& injector) {   // method to create bus using injector
-
-	return masstrasit_cpp::bus_factory::create_using_rabbit_mq([&injector](masstrasit_cpp::rabbit_mq_configurator & bus_configurator) {
+std::shared_ptr<masstrasit_cpp::bus> create_bus(injector_t const& injector) {   // method to create singleton bus using injector
+	static auto bus =  masstrasit_cpp::bus_factory::create_using_rabbit_mq([&injector](masstrasit_cpp::rabbit_mq_configurator & bus_configurator) {
 		auto host = bus_configurator.host(masstrasit_cpp::amqp_uri("localhost"), [](masstrasit_cpp::amqp_host_configurator & host_configurator) {
 			host_configurator.username("user");
 			host_configurator.password("password");
@@ -145,19 +140,22 @@ std::shared_ptr<masstrasit_cpp::bus> create_bus(injector_t const& injector) {   
 		            endpoint_configurator.load_from<my_message>(injector);      // i.e. impl of masstrasit_cpp::message_consumer<my_message>
         		});                                                             
 	});
+	
+	return bus;
 }
 
 void main() {
     auto container = boost::di::make_injector(
 			boost::di::bind<masstrasit_cpp::message_consumer<my_message>, dependent_consumer>().to<dependent_consumer>(),
-			boost::di::bind<mtc::bus>().to([](auto const& injector) { return create_bus(injector); })
+			boost::di::bind<masstrasit_cpp::i_publish_endpoint>().to([](auto const& injector) -> std::shared_ptr<masstrasit_cpp::i_publish_endpoint> { return get_bus(injector); }),
+			boost::di::bind<masstrasit_cpp::bus>().to([](auto const& injector) { return get_bus(injector); })
 		);
 
-		auto bus = container.create<std::shared_ptr<mtc::bus>>();
-			
-		bus->start();
-		bus->publish(my_message()).get();
-		bus->stop();
+	auto bus = container.create<std::shared_ptr<masstrasit_cpp::bus>>();
+		
+	bus->start();
+	bus->publish(my_message()).get();
+	bus->stop();
 }
 ```
 

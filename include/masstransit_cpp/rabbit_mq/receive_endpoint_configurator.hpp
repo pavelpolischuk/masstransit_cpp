@@ -4,6 +4,7 @@
 #include <masstransit_cpp/message_consumer.hpp>
 #include <masstransit_cpp/i_receive_endpoint_configurator.hpp>
 #include <masstransit_cpp/rabbit_mq/amqp_host.hpp>
+#include <masstransit_cpp/rabbit_mq/receive_endpoint.hpp>
 
 #include <boost/date_time/posix_time/posix_time_duration.hpp>
 #include <memory>
@@ -12,8 +13,6 @@ namespace masstransit_cpp
 {
 	namespace rabbit_mq
 	{
-		class receive_endpoint;
-
 		class MASSTRANSIT_CPP_EXPORT receive_endpoint_configurator : public i_receive_endpoint_configurator
 		{
 		public:
@@ -24,7 +23,7 @@ namespace masstransit_cpp
 			receive_endpoint_configurator & prefetch_count(uint16_t count);
 			receive_endpoint_configurator & poll_timeout(boost::posix_time::time_duration const& timeout);
 
-			std::shared_ptr<receive_endpoint> build();
+			receive_endpoint::builder get_builder() const;
 
 		protected:
 			bool auto_delete_{ false };
@@ -32,6 +31,8 @@ namespace masstransit_cpp
 			boost::posix_time::time_duration timeout_{ boost::posix_time::milliseconds(500) };
 
 			amqp_host host_;
+
+			static std::shared_ptr<receive_endpoint> build(receive_endpoint_configurator configuration);
 		};
 	}
 }
