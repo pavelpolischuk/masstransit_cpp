@@ -16,11 +16,9 @@ namespace masstransit_cpp_tests
 		message_consumer_mock(){}
 		~message_consumer_mock() override = default;
 		
-		void consume(consume_context<message_mock> const& context) override;
+		void consume(consume_context<message_mock> const& context) override
+		{
+			saved_value = context.message.id;
+		}
 	};
-
-	inline void message_consumer_mock::consume(consume_context<message_mock> const& context)
-	{
-		saved_value = context.message.id;
-	}
 }

@@ -17,6 +17,8 @@ add_executable(masstransit_cpp_tests
 	src/catch.hpp
 	src/message_mock.hpp
 	src/message_consumer_mock.hpp
+	src/message_consumer_depend.hpp
+	src/message_consumer_depend.cpp
 	
 	src/main.cpp
 	src/message_mock.cpp
