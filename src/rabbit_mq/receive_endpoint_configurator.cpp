@@ -1,5 +1,4 @@
 #include "masstransit_cpp/rabbit_mq/receive_endpoint_configurator.hpp"
-#include "masstransit_cpp/rabbit_mq/receive_endpoint.hpp"
 
 #include <SimpleAmqpClient/Channel.h>
 
@@ -35,11 +34,16 @@ namespace masstransit_cpp
 			return *this;
 		}
 
-		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build()
+		receive_endpoint::builder receive_endpoint_configurator::get_builder() const
 		{
-			auto channel = AmqpClient::Channel::CreateFromUri(host_.to_string());
-			channel->DeclareQueue(queue_, false, true, false, auto_delete_);
-			return std::make_shared<receive_endpoint>(channel, queue_, prefetch_count_, timeout_, create_consumers());
+			return bind(&build, *this);
+		}
+
+		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build(receive_endpoint_configurator configurator)
+		{
+			auto channel = AmqpClient::Channel::CreateFromUri(configurator.host_.to_string());
+			channel->DeclareQueue(configurator.queue_, false, true, false, configurator.auto_delete_);
+			return std::make_shared<receive_endpoint>(channel, configurator.queue_, configurator.prefetch_count_, configurator.timeout_, configurator.create_consumers());
 		}
 	}
 }

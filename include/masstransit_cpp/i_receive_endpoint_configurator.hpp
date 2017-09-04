@@ -8,8 +8,6 @@ namespace masstransit_cpp
 	class MASSTRANSIT_CPP_EXPORT i_receive_endpoint_configurator
 	{
 	public:
-		using consumers_map = std::map<std::string, std::shared_ptr<i_message_consumer>>;
-
 		explicit i_receive_endpoint_configurator(std::string const& queue_name);
 		
 		virtual ~i_receive_endpoint_configurator() = default;
@@ -46,11 +44,13 @@ namespace masstransit_cpp
 		}
 
 	protected:
-		std::map<std::string, std::function<std::shared_ptr<i_message_consumer>()>> consumers_factories_by_type_;
+		using consumers_map = std::map<std::string, std::shared_ptr<i_message_consumer>>;
+		using consumers_factories_map = std::map<std::string, std::function<std::shared_ptr<i_message_consumer>()>>;
+
+		consumers_factories_map consumers_factories_by_type_;
 		std::string queue_;
 
 		virtual void add_consumer_factory(std::string const& message_type, std::function<std::shared_ptr<i_message_consumer>()> const& factory);
-
 		consumers_map create_consumers() const;
 	};
 }
