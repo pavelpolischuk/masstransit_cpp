@@ -30,9 +30,9 @@ namespace masstransit_cpp
 		boost::shared_ptr<AmqpClient::Channel> queue_channel_;
 		std::shared_ptr<rabbit_mq::exchange_manager> exchange_manager_;
 		std::vector<std::shared_ptr<rabbit_mq::receive_endpoint>> receivers_;
-		std::vector<rabbit_mq::receive_endpoint::factory> receivers_factories_;
-		amqp_host target_host_;
-		host_info client_info_;
+		const std::vector<rabbit_mq::receive_endpoint::factory> receivers_factories_;
+		const amqp_host target_host_;
+		const host_info client_info_;
 
 		std::unique_ptr<threads::task_repeat> receiving_loop_;
 		std::unique_ptr<threads::worker_thread> publish_worker_;
