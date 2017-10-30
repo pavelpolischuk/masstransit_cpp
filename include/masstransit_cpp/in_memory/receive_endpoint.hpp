@@ -2,6 +2,7 @@
 
 #include <masstransit_cpp/global.hpp>
 #include <masstransit_cpp/i_receive_endpoint.hpp>
+#include <masstransit_cpp/threads/worker_thread.hpp>
 
 #include <boost/log/trivial.hpp>
 
@@ -19,34 +20,36 @@ namespace masstransit_cpp
 			explicit receive_endpoint(std::string const& queue, consumers_map const& consumers_by_type);
 
 			template<class message_t>
-			void deliver(consume_context<message_t> const& context) const
+			void deliver(consume_context<message_t> const& context)
 			{
-				auto consumer = std::static_pointer_cast<message_consumer<message_t>>(find_consumer(context.message_types));
-				if (consumer == nullptr)
-					return;
+				consumer_worker_.enqueue([this](consume_context<message_t> const& message) {
+					auto message_context = message;
+					auto consumer = std::static_pointer_cast<message_consumer<message_t>>(find_consumer(message_context.message_types));
+					if (consumer == nullptr)
+						return;
 
-				try
-				{
-					consumer->consume(context);
-				}
-				catch (std::exception & ex)
-				{
-					BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_type() << "] try handle message:\n"
-						<< context.message.to_json().dump(2) << "\n\tException: " << ex.what();
-				}
-				catch (...)
-				{
-					BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_type() << "] try handle message:\n"
-						<< context.message.to_json().dump(2) << "\n\tException: unknown";
-				}
+					try
+					{
+						consumer->consume(message_context);
+					}
+					catch (std::exception & ex)
+					{
+						BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_type() << "] try handle message:\n"
+							<< nlohmann::json(message_context.message).dump(2) << "\n\tException: " << ex.what();
+					}
+					catch (...)
+					{
+						BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_type() << "] try handle message:\n"
+							<< nlohmann::json(message_context.message).dump(2) << "\n\tException: unknown";
+					}
+				}, context);
 			}
 
-			void deliver(consume_context_info const& context) const;
-
-			void bind_queues(std::shared_ptr<exchange_manager> const& exchange_manager);
+			void deliver(consume_context_info const& context);
 
 		private:
 			const std::string queue_;
+			threads::worker_thread consumer_worker_;
 		};
 	}
 }

@@ -68,12 +68,12 @@ namespace masstransit_cpp
 			}
 			catch (std::exception & ex)
 			{
-				BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: " << ex.what();
+				BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: " << ex.what() << "\n\tBody: " << body;
 				return false;
 			}
 			catch (...)
 			{
-				BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: unknown";
+				BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: unknown" << "\n\tBody: " << body;
 				return false;
 			}
 		}, m, t);
