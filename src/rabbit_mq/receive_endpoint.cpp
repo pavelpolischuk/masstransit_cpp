@@ -30,7 +30,7 @@ namespace masstransit_cpp
 			auto message = envelope->Message();
 			auto body = message->Body();
 			auto body_j = nlohmann::json::parse(body.begin(), body.end());
-			consume_context_info context(body_j);
+			auto context = body_j.get<consume_context_info>();
 
 			auto consumer = find_consumer(context.message_types);
 			if (consumer == nullptr)

@@ -6,7 +6,7 @@ AMQP message publishing and consuming library. Like and a little compatible with
 
 #### Create message struct
 
-It is necessary to implement `ctor` from `nlohmann::json`, static method `message_type()->std::string` and serialize method `to_json()->nlohmann::json`.
+It is necessary to implement default `ctor`, static method `message_type()` and serialize/deserialize methods `to_json`/`from_json`.
 
 ```cpp
 #include <masstransit_cpp/json.hpp>
@@ -15,12 +15,19 @@ struct my_message {
 	int data_1;
 	std::string data_2;
 
-	my_message(nlohmann::json const& obj);
+	my_message(){}
 	
 	static std::string message_type() { return "MyMessage"; }
-
-	nlohmann::json to_json() { return { {"data_1", data_1}, {"data_2", data_2} }; }
 };
+
+void to_json(nlohmann::json & j, my_message const& p) {
+	j = nlohmann::json{ {"data_1", p.data_1}, {"data_2", p.data_2} };
+}
+
+void from_json(nlohmann::json const& j, person & p) {
+	p.data_1 = j.at("data_1").get<int>();
+	p.data_2 = j.at("data_2").get<std::string>();
+}
 ```
 
 #### Create message consumer

@@ -41,7 +41,7 @@ namespace masstransit_cpp_tests
 		{
 			auto json = nlohmann::json::parse(message_context_data.begin(), message_context_data.end());
 
-			consume_context_info context(json);
+			auto context = json.get<consume_context_info>();
 			boost::uuids::string_generator uuid;
 
 			REQUIRE(context.message_id == uuid("0e020000-5d98-0015-de21-08d476a8c7bf"));
@@ -69,7 +69,7 @@ namespace masstransit_cpp_tests
 		{
 			auto json = nlohmann::json::parse(message_context_data.begin(), message_context_data.end());
 
-			consume_context_info context_info(json);
+			auto context_info = json.get<consume_context_info>();
 			consume_context<message_mock> context(context_info);
 
 			REQUIRE(context.info == context_info);
@@ -91,10 +91,10 @@ namespace masstransit_cpp_tests
 		SECTION("context_info_to_json_return_it")
 		{
 			auto json = nlohmann::json::parse(message_context_data.begin(), message_context_data.end());
-
-			consume_context_info context(json);
 			
-			REQUIRE(context.to_json().dump(0) == json.dump(0));
+			auto context_info = json.get<consume_context_info>();
+			
+			REQUIRE(nlohmann::json(context_info).dump(0) == json.dump(0));
 		}
 	}
 }

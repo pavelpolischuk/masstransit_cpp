@@ -5,30 +5,30 @@ namespace masstransit_cpp
 	host_info::host_info()
 	{}
 
-	host_info::host_info(nlohmann::json const& obj)
+	void to_json(nlohmann::json& j, host_info const& p)
 	{
-		machine_name = obj.get<std::string>("machineName", "");
-		process_name = obj.get<std::string>("processName", "");
-		process_id = obj.get<int64_t>("processId", 0);
-		assembly = obj.get<std::string>("assembly", "");
-		assembly_version = obj.get<std::string>("assemblyVersion", "");
-		framework_version = obj.get<std::string>("frameworkVersion", "");
-		masstransit_version = obj.get<std::string>("massTransitVersion", "");
-		operating_system_version = obj.get<std::string>("operatingSystemVersion", "");
+		j = {
+			{ "machineName", p.machine_name },
+			{ "processName", p.process_name },
+			{ "processId", p.process_id },
+			{ "assembly", p.assembly },
+			{ "assemblyVersion", p.assembly_version },
+			{ "frameworkVersion", p.framework_version },
+			{ "massTransitVersion", p.masstransit_version },
+			{ "operatingSystemVersion", p.operating_system_version }
+		};
 	}
 
-	nlohmann::json host_info::to_json() const
+	void from_json(nlohmann::json const& j, host_info& p)
 	{
-		return{
-			{ "machineName", machine_name },
-			{ "processName", process_name },
-			{ "processId", process_id },
-			{ "assembly", assembly },
-			{ "assemblyVersion", assembly_version },
-			{ "frameworkVersion", framework_version },
-			{ "massTransitVersion", masstransit_version },
-			{ "operatingSystemVersion", operating_system_version }
-		};
+		p.machine_name = j.at("machineName").get<std::string>();
+		p.process_name = j.at("processName").get<std::string>();
+		p.process_id = j.at("processId").get<int64_t>();
+		p.assembly = j.at("assembly").get<std::string>();
+		p.assembly_version = j.at("assemblyVersion").get<std::string>();
+		p.framework_version = j.at("frameworkVersion").get<std::string>();
+		p.masstransit_version = j.at("massTransitVersion").get<std::string>();
+		p.operating_system_version = j.at("operatingSystemVersion").get<std::string>();
 	}
 
 	bool operator==(host_info const& lhv, host_info const& rhv)

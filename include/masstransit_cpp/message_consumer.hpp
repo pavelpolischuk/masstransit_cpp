@@ -5,8 +5,7 @@
 
 namespace masstransit_cpp
 {
-	template<typename message_t, typename std::enable_if<
-		std::is_convertible<nlohmann::json, message_t>::value, int>::type = 0 >
+	template<class message_t>
 	class MASSTRANSIT_CPP_EXPORT message_consumer : public i_message_consumer
 	{
 	public:

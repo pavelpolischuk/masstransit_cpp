@@ -1,35 +1,34 @@
 #include <masstransit_cpp/consume_context.hpp>
-#include <boost/uuid/string_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include <masstransit_cpp/json_adapters.hpp>
 
 namespace masstransit_cpp
 {
-	consume_context_info::consume_context_info(nlohmann::json const& json)
-		: message_id(boost::uuids::string_generator()(json.get<std::string>("messageId", "")))
-		, conversation_id(boost::uuids::string_generator()(json.get<std::string>("conversationId", "")))
-		, source_address(json.get<std::string>("sourceAddress", ""))
-		, destination_address(json.get<std::string>("destinationAddress", ""))
-		, message_types(json.get<std::vector<std::string>>("messageType"))
-		, message(json.get<nlohmann::json::object_t>("message"))
-		, send_host(json.get<host_info>("host"))
-	{
-	}
-
 	consume_context_info::consume_context_info()
 	{
 	}
 
-	nlohmann::json consume_context_info::to_json() const
+	void to_json(nlohmann::json& j, consume_context_info const& p)
 	{
-		return{ 
-			{ "messageId", to_string(message_id) },
-			{ "conversationId", to_string(conversation_id) },
-			{ "sourceAddress", source_address },
-			{ "destinationAddress", destination_address },
-			{ "messageType", message_types },
-			{ "message", message },
-			{ "host", send_host.to_json() }
+		j = {
+			{ "messageId", p.message_id },
+			{ "conversationId", p.conversation_id },
+			{ "sourceAddress", p.source_address },
+			{ "destinationAddress", p.destination_address },
+			{ "messageType", p.message_types },
+			{ "message", p.message },
+			{ "host", p.send_host }
 		};
+	}
+
+	void from_json(nlohmann::json const& j, consume_context_info& p)
+	{
+		p.message_id = j.at("messageId").get<boost::uuids::uuid>();
+		p.conversation_id = j.at("conversationId").get<boost::uuids::uuid>();
+		p.source_address = j.at("sourceAddress").get<std::string>();
+		p.destination_address = j.at("destinationAddress").get<std::string>();
+		p.message_types = j.at("messageType").get<std::vector<std::string>>();
+		p.message = j.at("message").get<nlohmann::json::object_t>();
+		p.send_host = j.at("host").get<host_info>();
 	}
 
 	bool operator==(consume_context_info const& lhv, consume_context_info const& rhv)
