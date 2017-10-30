@@ -6,11 +6,12 @@ namespace masstransit_cpp_tests
 	{
 		int id;
 
-		message_mock(nlohmann::json const& obj);
+		message_mock();
 		explicit message_mock(int id);
 		
 		static std::string message_type();
-
-		nlohmann::json to_json() const;
 	};
+
+	void to_json(nlohmann::json& j, message_mock const& p);
+	void from_json(nlohmann::json const& j, message_mock & p);
 }

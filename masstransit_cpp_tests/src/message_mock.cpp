@@ -2,9 +2,10 @@
 
 namespace masstransit_cpp_tests
 {
-	message_mock::message_mock(nlohmann::json const& obj)
-		: id(obj.get<int>("id"))
-	{}
+	message_mock::message_mock()
+		: id(0)
+	{
+	}
 
 	message_mock::message_mock(int id)
 		: id(id)
@@ -15,8 +16,13 @@ namespace masstransit_cpp_tests
 		return "Test.Domain.Contracts:HandlingRequest";
 	}
 
-	nlohmann::json message_mock::to_json() const
+	void to_json(nlohmann::json& j, message_mock const& p)
 	{
-		return{ {"id", id} };
+		j = { { "id", p.id } };
+	}
+
+	void from_json(nlohmann::json const& j, message_mock& p)
+	{
+		p.id = j.at("id").get<int>();
 	}
 }

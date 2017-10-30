@@ -8,7 +8,6 @@ namespace masstransit_cpp
 	struct MASSTRANSIT_CPP_EXPORT host_info
 	{
 		host_info();
-		explicit host_info(nlohmann::json const& obj);
 
 		std::string machine_name;
 		std::string process_name;
@@ -19,8 +18,9 @@ namespace masstransit_cpp
 		std::string masstransit_version;
 		std::string operating_system_version;
 
-		nlohmann::json to_json() const;
-
 		friend bool operator==(host_info const& lhv, host_info const& rhv);
 	};
+
+	void to_json(nlohmann::json& j, host_info const& p);
+	void from_json(nlohmann::json const& j, host_info & p);
 }

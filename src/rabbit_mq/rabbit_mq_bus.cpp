@@ -54,7 +54,8 @@ namespace masstransit_cpp
 				exchange_manager_->declare_message_type(type, queue_channel_);
 			}
 
-			auto body = for_send.to_json().dump(2);
+			nlohmann::json json(for_send);
+			auto body = json.dump(2);
 
 			try
 			{
