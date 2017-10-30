@@ -11,10 +11,10 @@ namespace masstransit_cpp
 	{
 		class exchange_manager;
 		
-		class MASSTRANSIT_CPP_EXPORT receive_endpoint : public i_receive_endpoint
+		class MASSTRANSIT_CPP_API receive_endpoint : public i_receive_endpoint
 		{
 		public:
-			using builder = std::function<std::shared_ptr<receive_endpoint>()>;
+			using factory = std::function<std::shared_ptr<receive_endpoint>()>;
 			
 			explicit receive_endpoint(std::string const& queue, consumers_map const& consumers_by_type);
 

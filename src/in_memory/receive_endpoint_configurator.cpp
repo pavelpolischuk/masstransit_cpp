@@ -20,7 +20,7 @@ namespace masstransit_cpp
 			return *this;
 		}
 
-		receive_endpoint::builder receive_endpoint_configurator::get_builder() const
+		receive_endpoint::factory receive_endpoint_configurator::get_factory() const
 		{
 			return bind(&build, *this);
 		}

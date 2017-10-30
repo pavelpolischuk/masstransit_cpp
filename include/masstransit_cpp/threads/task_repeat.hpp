@@ -9,7 +9,7 @@ namespace masstransit_cpp
 {
 	namespace threads
 	{
-		class MASSTRANSIT_CPP_EXPORT task_repeat
+		class MASSTRANSIT_CPP_API task_repeat
 		{
 		public:
 			template<

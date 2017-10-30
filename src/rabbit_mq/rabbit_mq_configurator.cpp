@@ -53,13 +53,13 @@ namespace masstransit_cpp
 
 	std::shared_ptr<bus> rabbit_mq_configurator::build()
 	{
-		std::vector<receive_endpoint::builder> receivers_builders;
+		std::vector<receive_endpoint::factory> receivers_factories;
 		for(auto & receive_factory : receive_endpoints_)
 		{
-			receivers_builders.push_back(receive_factory.second.get_builder());
+			receivers_factories.push_back(receive_factory.second.get_factory());
 		}
 
 		auto exchanges = std::make_shared<exchange_manager>(auto_delete_);
-		return std::make_shared<rabbit_mq_bus>(host_, client_info_, exchanges, receivers_builders);
+		return std::make_shared<rabbit_mq_bus>(host_, client_info_, exchanges, receivers_factories);
 	}
 }

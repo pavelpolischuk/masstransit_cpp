@@ -4,7 +4,8 @@
 
 namespace masstransit_cpp
 {
-	in_memory_bus::in_memory_bus()
+	in_memory_bus::in_memory_bus(std::vector<in_memory::receive_endpoint::factory> const& receivers_factories)
+		: receivers_factories_(receivers_factories)
 	{
 	}
 

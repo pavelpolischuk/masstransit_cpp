@@ -9,7 +9,7 @@
 
 namespace masstransit_cpp
 {
-	struct MASSTRANSIT_CPP_EXPORT consume_context_info
+	struct MASSTRANSIT_CPP_API consume_context_info
 	{
 		consume_context_info();
 
@@ -17,11 +17,13 @@ namespace masstransit_cpp
 		static consume_context_info create(message_t const& message)
 		{
 			consume_context_info info;
-			info.message = nlohmann::json(message);
-			info.message_types = { "urn:message:" + message_t::message_type() };
+			
 			boost::uuids::random_generator random;
 			info.message_id = random();
 			info.conversation_id = random();
+			
+			info.message_types = { "urn:message:" + message_t::message_type() };
+			info.message = nlohmann::json(message);
 			return std::move(info);
 		}
 
@@ -44,7 +46,7 @@ namespace masstransit_cpp
 
 
 	template<class message_t>
-	struct MASSTRANSIT_CPP_EXPORT consume_context
+	struct MASSTRANSIT_CPP_API consume_context
 	{
 		using message_type = message_t;
 

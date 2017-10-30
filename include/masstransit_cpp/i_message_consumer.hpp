@@ -5,7 +5,7 @@
 
 namespace masstransit_cpp
 {
-	class MASSTRANSIT_CPP_EXPORT i_message_consumer
+	class MASSTRANSIT_CPP_API i_message_consumer
 	{
 	public:
 		virtual ~i_message_consumer() = default;

@@ -7,7 +7,7 @@ namespace masstransit_cpp
 {
 	template<typename message_t, typename std::enable_if<
 		std::is_convertible<nlohmann::json, message_t>::value, int>::type = 0 >
-	class MASSTRANSIT_CPP_EXPORT message_handler : public message_consumer<message_t>
+	class MASSTRANSIT_CPP_API message_handler : public message_consumer<message_t>
 	{
 	public:
 		using type_message = message_t;

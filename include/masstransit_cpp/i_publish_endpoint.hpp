@@ -8,13 +8,12 @@
 
 namespace masstransit_cpp
 {
-	class MASSTRANSIT_CPP_EXPORT i_publish_endpoint
+	class MASSTRANSIT_CPP_API i_publish_endpoint
 	{
 	public:
 		virtual ~i_publish_endpoint() = default;
 
-		template<typename message_t, typename std::enable_if<
-			std::is_convertible<nlohmann::json, message_t>::value, int>::type = 0 >
+		template<typename message_t>
 		std::future<bool> publish(message_t const& message) const
 		{
 			consume_context_info info = consume_context_info::create(message);

@@ -4,7 +4,7 @@
 
 namespace masstransit_cpp
 {
-	class MASSTRANSIT_CPP_EXPORT bus_control
+	class MASSTRANSIT_CPP_API bus_control
 	{
 	public:
 		virtual ~bus_control() = default;

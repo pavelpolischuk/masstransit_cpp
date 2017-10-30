@@ -15,10 +15,10 @@ namespace masstransit_cpp
 	{
 		class exchange_manager;
 
-		class MASSTRANSIT_CPP_EXPORT receive_endpoint : public i_receive_endpoint
+		class MASSTRANSIT_CPP_API receive_endpoint : public i_receive_endpoint
 		{
 		public:
-			using builder = std::function<std::shared_ptr<receive_endpoint>()>;
+			using factory = std::function<std::shared_ptr<receive_endpoint>()>;
 
 			receive_endpoint(boost::shared_ptr<AmqpClient::Channel> const& channel, std::string const& queue, uint16_t prefetch_count, boost::posix_time::time_duration const& timeout, consumers_map const& consumers_by_type);
 

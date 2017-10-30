@@ -5,7 +5,7 @@ namespace masstransit_cpp
 {
 	namespace threads
 	{
-		class MASSTRANSIT_CPP_EXPORT worker
+		class MASSTRANSIT_CPP_API worker
 		{
 		public:
 			explicit worker(tasks_queue & queue);
