@@ -6,7 +6,7 @@
 
 namespace masstransit_cpp
 {
-	struct MASSTRANSIT_CPP_EXPORT amqp_uri
+	struct MASSTRANSIT_CPP_API amqp_uri
 	{
 		explicit amqp_uri(std::string const& host);
 
@@ -17,7 +17,7 @@ namespace masstransit_cpp
 		static const amqp_uri localhost;
 	};
 
-	struct MASSTRANSIT_CPP_EXPORT amqp_host
+	struct MASSTRANSIT_CPP_API amqp_host
 	{
 		explicit amqp_host(amqp_uri const& uri, std::string const& user = "", std::string const& password = "");
 
@@ -30,7 +30,7 @@ namespace masstransit_cpp
 		friend bool operator == (amqp_host const& l, amqp_host const& r);
 	};
 
-	class MASSTRANSIT_CPP_EXPORT amqp_host_configurator
+	class MASSTRANSIT_CPP_API amqp_host_configurator
 	{
 	public:
 		explicit amqp_host_configurator(amqp_uri const& uri);

@@ -11,7 +11,7 @@ namespace masstransit_cpp
 	{
 		class receive_endpoint;
 
-		class MASSTRANSIT_CPP_EXPORT receive_endpoint_configurator : public i_receive_endpoint_configurator
+		class MASSTRANSIT_CPP_API receive_endpoint_configurator : public i_receive_endpoint_configurator
 		{
 		public:
 			receive_endpoint_configurator(std::string const& queue_name);
@@ -19,7 +19,7 @@ namespace masstransit_cpp
 
 			receive_endpoint_configurator & transport_concurrency_limit(size_t limit);
 
-			receive_endpoint::builder get_builder() const;
+			receive_endpoint::factory get_factory() const;
 		
 		private:
 			size_t transport_concurrency_limit_{ 1 };

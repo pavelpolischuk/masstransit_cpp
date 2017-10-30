@@ -14,10 +14,10 @@ namespace masstransit_cpp
 		class worker_thread;
 	}
 
-	class MASSTRANSIT_CPP_EXPORT rabbit_mq_bus : public bus
+	class MASSTRANSIT_CPP_API rabbit_mq_bus : public bus
 	{
 	public:
-		rabbit_mq_bus(amqp_host const& target_host, host_info const& client_info, std::shared_ptr<rabbit_mq::exchange_manager> const& exchange_manager, std::vector<rabbit_mq::receive_endpoint::builder> const& receivers_builders);
+		rabbit_mq_bus(amqp_host const& target_host, host_info const& client_info, std::shared_ptr<rabbit_mq::exchange_manager> const& exchange_manager, std::vector<rabbit_mq::receive_endpoint::factory> const& receivers_factories);
 		~rabbit_mq_bus() override;
 
 		void start() override;
@@ -30,7 +30,7 @@ namespace masstransit_cpp
 		boost::shared_ptr<AmqpClient::Channel> queue_channel_;
 		std::shared_ptr<rabbit_mq::exchange_manager> exchange_manager_;
 		std::vector<std::shared_ptr<rabbit_mq::receive_endpoint>> receivers_;
-		std::vector<rabbit_mq::receive_endpoint::builder> receivers_builders_;
+		std::vector<rabbit_mq::receive_endpoint::factory> receivers_factories_;
 		amqp_host target_host_;
 		host_info client_info_;
 

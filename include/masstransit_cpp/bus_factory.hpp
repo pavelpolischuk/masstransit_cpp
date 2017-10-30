@@ -10,7 +10,7 @@ namespace masstransit_cpp
 	class in_memory_configurator;
 	class rabbit_mq_configurator;
 
-	class MASSTRANSIT_CPP_EXPORT bus_factory
+	class MASSTRANSIT_CPP_API bus_factory
 	{
 	public:
 		static std::shared_ptr<bus> create_using_rabbit_mq(std::function<void(rabbit_mq_configurator & configurator)> const& configure);

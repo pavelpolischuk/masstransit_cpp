@@ -6,7 +6,7 @@
 
 namespace masstransit_cpp
 {
-	class MASSTRANSIT_CPP_EXPORT bus : public bus_control, public i_publish_endpoint
+	class MASSTRANSIT_CPP_API bus : public bus_control, public i_publish_endpoint
 	{
 	public:
 		~bus() override = default;

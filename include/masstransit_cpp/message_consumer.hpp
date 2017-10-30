@@ -6,7 +6,7 @@
 namespace masstransit_cpp
 {
 	template<class message_t>
-	class MASSTRANSIT_CPP_EXPORT message_consumer : public i_message_consumer
+	class MASSTRANSIT_CPP_API message_consumer : public i_message_consumer
 	{
 	public:
 		using type_message = message_t;

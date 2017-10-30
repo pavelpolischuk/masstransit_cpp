@@ -16,13 +16,12 @@ namespace masstransit_cpp
 			return exchanges_.count(type) > 0;
 		}
 
-		void exchange_manager::declare_message_type(std::string const& type, boost::shared_ptr<AmqpClient::Channel> const& channel)
+		void exchange_manager::declare_message_type(std::string const& type)
 		{
 			if (exchanges_.count(type) == 0)
 			{
 				try
 				{
-					channel->DeclareExchange(type, AmqpClient::Channel::EXCHANGE_TYPE_FANOUT, false, true, auto_delete_);
 					exchanges_.insert(type);
 				}
 				catch (std::exception ex)

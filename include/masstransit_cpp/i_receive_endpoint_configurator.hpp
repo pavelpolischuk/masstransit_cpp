@@ -5,7 +5,7 @@
 
 namespace masstransit_cpp
 {
-	class MASSTRANSIT_CPP_EXPORT i_receive_endpoint_configurator
+	class MASSTRANSIT_CPP_API i_receive_endpoint_configurator
 	{
 	public:
 		explicit i_receive_endpoint_configurator(std::string const& queue_name);

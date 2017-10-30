@@ -13,7 +13,7 @@ namespace masstransit_cpp
 {
 	namespace rabbit_mq
 	{
-		class MASSTRANSIT_CPP_EXPORT receive_endpoint_configurator : public i_receive_endpoint_configurator
+		class MASSTRANSIT_CPP_API receive_endpoint_configurator : public i_receive_endpoint_configurator
 		{
 		public:
 			receive_endpoint_configurator(amqp_host const& host, std::string const& queue_name);
@@ -23,7 +23,7 @@ namespace masstransit_cpp
 			receive_endpoint_configurator & prefetch_count(uint16_t count);
 			receive_endpoint_configurator & poll_timeout(boost::posix_time::time_duration const& timeout);
 
-			receive_endpoint::builder get_builder() const;
+			receive_endpoint::factory get_factory() const;
 
 		protected:
 			bool auto_delete_{ false };

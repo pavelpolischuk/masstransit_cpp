@@ -11,7 +11,7 @@ namespace masstransit_cpp
 {
 	namespace rabbit_mq
 	{
-		class MASSTRANSIT_CPP_EXPORT exchange_manager
+		class MASSTRANSIT_CPP_API exchange_manager
 		{
 		public:
 			exchange_manager(bool auto_delete);

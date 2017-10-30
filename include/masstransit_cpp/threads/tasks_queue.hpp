@@ -10,7 +10,7 @@ namespace masstransit_cpp
 {
 	namespace threads
 	{
-		class MASSTRANSIT_CPP_EXPORT tasks_queue
+		class MASSTRANSIT_CPP_API tasks_queue
 		{
 		public:
 			virtual ~tasks_queue() = default;

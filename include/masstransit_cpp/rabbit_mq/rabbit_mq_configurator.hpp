@@ -10,7 +10,7 @@ namespace masstransit_cpp
 {
 	class bus;
 	
-	class MASSTRANSIT_CPP_EXPORT rabbit_mq_configurator
+	class MASSTRANSIT_CPP_API rabbit_mq_configurator
 	{
 	public:
 		explicit rabbit_mq_configurator();

@@ -6,7 +6,7 @@ namespace masstransit_cpp
 {
 	namespace threads
 	{
-		class MASSTRANSIT_CPP_EXPORT worker_thread : public tasks_queue
+		class MASSTRANSIT_CPP_API worker_thread : public tasks_queue
 		{
 		public:
 			worker_thread();

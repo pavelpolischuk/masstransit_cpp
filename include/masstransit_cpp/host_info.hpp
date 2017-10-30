@@ -5,7 +5,7 @@
 
 namespace masstransit_cpp
 {
-	struct MASSTRANSIT_CPP_EXPORT host_info
+	struct MASSTRANSIT_CPP_API host_info
 	{
 		host_info();
 

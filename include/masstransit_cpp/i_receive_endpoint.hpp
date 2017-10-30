@@ -7,7 +7,7 @@
 
 namespace masstransit_cpp
 {
-	class MASSTRANSIT_CPP_EXPORT i_receive_endpoint
+	class MASSTRANSIT_CPP_API i_receive_endpoint
 	{
 	public:
 		using consumers_map = std::map<std::string, std::shared_ptr<i_message_consumer>>;

@@ -10,7 +10,7 @@ namespace masstransit_cpp
 {
 	class bus;
 
-	class MASSTRANSIT_CPP_EXPORT in_memory_configurator
+	class MASSTRANSIT_CPP_API in_memory_configurator
 	{
 	public:
 		in_memory_configurator & receive_endpoint(std::string const& queue_name, std::function<void(in_memory::receive_endpoint_configurator&)> const& configure);
