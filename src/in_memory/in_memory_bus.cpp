@@ -4,7 +4,7 @@
 
 namespace masstransit_cpp
 {
-	in_memory_bus::in_memory_bus(std::map<std::string, in_memory::receive_endpoint::factory> const& receivers_factories)
+	in_memory_bus::in_memory_bus(std::vector<in_memory::receive_endpoint::factory> const& receivers_factories)
 		: receivers_factories_(receivers_factories)
 	{
 	}
@@ -15,9 +15,9 @@ namespace masstransit_cpp
 
 	void in_memory_bus::start()
 	{
-		for (auto const& b : receivers_factories_)
+		for (auto const& factory : receivers_factories_)
 		{
-			receivers_.emplace(b.first, b.second());
+			receivers_.push_back(factory());
 		}
 
 		publish_worker_ = std::make_unique<threads::worker_thread>();
@@ -26,22 +26,19 @@ namespace masstransit_cpp
 	void in_memory_bus::stop()
 	{
 		publish_worker_ = nullptr;
+		receivers_.clear();
 	}
 
 	std::future<bool> in_memory_bus::publish_impl(consume_context_info const& m, std::string const& t) const
 	{
 		return publish_worker_->enqueue([this](consume_context_info const& message, std::string const& type) -> bool {
-			auto for_send = message;
-			auto queue = receivers_.find(type);
-			if (queue == receivers_.end())
-				return false;
-
-			auto body = nlohmann::json(for_send).dump(2);
+			auto body = nlohmann::json(message).dump(2);
 			try
 			{
 				BOOST_LOG_TRIVIAL(debug) << "bus publish message:\n" << body;
 
-				queue->second->deliver(for_send);
+				for (auto const& receiver : receivers_)
+					receiver->deliver(message);
 
 				BOOST_LOG_TRIVIAL(debug) << "[DONE]";
 				return true;

@@ -28,19 +28,24 @@ namespace masstransit_cpp
 					if (consumer == nullptr)
 						return;
 
+					auto body = nlohmann::json(message_context.message).dump(2);
 					try
 					{
+						BOOST_LOG_TRIVIAL(debug) << "bus consumed message:\n" << body;
+						
 						consumer->consume(message_context);
+
+						BOOST_LOG_TRIVIAL(debug) << "[DONE]";
 					}
 					catch (std::exception & ex)
 					{
 						BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_type() << "] try handle message:\n"
-							<< nlohmann::json(message_context.message).dump(2) << "\n\tException: " << ex.what();
+							<< body << "\n\tException: " << ex.what();
 					}
 					catch (...)
 					{
 						BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer->message_type() << "] try handle message:\n"
-							<< nlohmann::json(message_context.message).dump(2) << "\n\tException: unknown";
+							<< body << "\n\tException: unknown";
 					}
 				}, context);
 			}
