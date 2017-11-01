@@ -29,7 +29,7 @@ namespace masstransit_cpp_tests
 		// singleton
 		static auto bus = mtc::bus_factory::create_using_rabbit_mq([&injector](mtc::rabbit_mq_configurator & bus_configurator)
 		{
-			auto host = bus_configurator.host(mtc::amqp_uri("localhost"), [](mtc::amqp_host_configurator & host_configurator)
+			auto host = bus_configurator.host("localhost", [](mtc::amqp_host_configurator & host_configurator)
 			{
 				host_configurator.username("guest");
 				host_configurator.password("guest");

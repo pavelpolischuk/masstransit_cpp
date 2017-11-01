@@ -8,51 +8,31 @@ namespace masstransit_cpp_tests
 
 	TEST_CASE("amqp_host_tests", "[amqp_host]")
 	{
-		SECTION("uri_to_string")
-		{
-			amqp_uri uri("192.16.1.1");
-			REQUIRE(uri.to_string() == "amqp://192.16.1.1");
-		}
-
 		SECTION("local_uri")
 		{
-			REQUIRE(amqp_uri::localhost.host == "127.0.0.1");
-		}
-
-		SECTION("host_to_string")
-		{
-			amqp_uri uri("192.16.128.1");
-			amqp_host host(uri);
-			
-			REQUIRE(host.to_string() == "amqp://192.16.128.1");
-		}
-
-		SECTION("host_with_user_to_string")
-		{
-			amqp_uri uri("192.16.128.1");
-			amqp_host host(uri, "user");
-			
-			REQUIRE(host.to_string() == "amqp://user@192.16.128.1");
-		}
-
-		SECTION("host_with_auth_to_string")
-		{
-			amqp_uri uri("192.16.128.1");
-			amqp_host host(uri, "user", "password");
-			
-			REQUIRE(host.to_string() == "amqp://user:password@192.16.128.1");
+			REQUIRE(amqp_host::localhost == "127.0.0.1");
 		}
 
 		SECTION("host_configurator::get_host")
 		{
-			amqp_uri uri("192.16.128.1");
-			amqp_host_configurator configurator(uri);
+			amqp_host_configurator configurator("192.16.128.1");
 			configurator.username("user");
 			configurator.password("password");
+			configurator.port(5672);
 
-			amqp_host host(uri, "user", "password");
+			amqp_host host("192.16.128.1", 5672, "user", "password");
 			
 			REQUIRE(configurator.get_host() == host);
+		}
+
+		SECTION("default_host_configurator::get_host")
+		{
+			amqp_host_configurator configurator("192.16.128.1");
+			amqp_host host("192.16.128.1");
+			amqp_host host_explicit("192.16.128.1", 5672, "", "");
+			
+			REQUIRE(configurator.get_host() == host);
+			REQUIRE(host_explicit == host);
 		}
 	}
 }
