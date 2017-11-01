@@ -18,11 +18,13 @@ add_executable(masstransit_cpp_tests
 	src/message_mock.hpp
 	src/message_consumer_mock.hpp
 	src/message_consumer_depend.hpp
-	src/message_consumer_depend.cpp
 	
 	src/main.cpp
 	src/message_mock.cpp
+	src/message_consumer_depend.cpp
+	
 	src/consume_context_tests.cpp
+	src/in_memory_bus_config_tests.cpp
 	src/bus_config_tests.cpp
 	src/bus_di_config_tests.cpp
 	src/amqp_host_tests.cpp
