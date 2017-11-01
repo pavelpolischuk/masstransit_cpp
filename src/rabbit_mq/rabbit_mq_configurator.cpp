@@ -9,20 +9,20 @@ namespace masstransit_cpp
 	using namespace rabbit_mq;
 
 	rabbit_mq_configurator::rabbit_mq_configurator()
-		: host_(amqp_uri::localhost)
+		: host_(amqp_host::localhost)
 	{
 	}
 
-	amqp_host rabbit_mq_configurator::host(amqp_uri const& uri, std::function<void(amqp_host_configurator&)> const& configure)
+	amqp_host rabbit_mq_configurator::host(std::string const& host, std::function<void(amqp_host_configurator&)> const& configure)
 	{
-		amqp_host_configurator configurator(uri);
+		amqp_host_configurator configurator(host);
 		configure(configurator);
 		return host_ = configurator.get_host();
 	}
 
 	rabbit_mq_configurator& rabbit_mq_configurator::receive_endpoint(amqp_host const& host, std::string const& queue_name, std::function<void(receive_endpoint_configurator&)> const& configure)
 	{
-		auto key = host.uri.host + queue_name;
+		auto key = host.host + queue_name;
 		auto q = receive_endpoints_.find(key);
 		if (q != receive_endpoints_.end())
 		{
@@ -51,7 +51,7 @@ namespace masstransit_cpp
 		return *this;
 	}
 
-	std::shared_ptr<bus> rabbit_mq_configurator::build()
+	std::shared_ptr<bus> rabbit_mq_configurator::build() const
 	{
 		std::vector<receive_endpoint::factory> receivers_factories;
 		for(auto & receive_factory : receive_endpoints_)

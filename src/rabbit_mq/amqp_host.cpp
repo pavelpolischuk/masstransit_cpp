@@ -3,20 +3,11 @@
 
 namespace masstransit_cpp
 {
-	amqp_uri::amqp_uri(std::string const& host)
+	const std::string amqp_host::localhost{ "127.0.0.1" };
+
+	amqp_host::amqp_host(std::string const& host, int port, std::string const& user, std::string const& password)
 		: host(host)
-	{
-	}
-	
-	std::string amqp_uri::to_string() const
-	{
-		return "amqp://" + host;
-	}
-
-	const amqp_uri amqp_uri::localhost{ "127.0.0.1" };
-
-	amqp_host::amqp_host(amqp_uri const& uri, std::string const& user, std::string const& password)
-		: uri(uri)
+		, port(port)
 		, user(user)
 		, password(password)
 	{
@@ -34,13 +25,19 @@ namespace masstransit_cpp
 			res << '@';
 		}
 
-		res << uri.host;
+		res << host;
 		return res.str();
 	}
-
-	amqp_host_configurator::amqp_host_configurator(amqp_uri const& uri)
-		: uri_(uri)
+	
+	amqp_host_configurator::amqp_host_configurator(std::string const& host)
+		: host_(host)
 	{
+	}
+
+	amqp_host_configurator& amqp_host_configurator::port(int port)
+	{
+		port_ = port;
+		return *this;
 	}
 
 	amqp_host_configurator& amqp_host_configurator::username(std::string const& username)
@@ -57,13 +54,19 @@ namespace masstransit_cpp
 
 	amqp_host amqp_host_configurator::get_host() const
 	{
-		return amqp_host{ uri_, username_, password_ };
+		return amqp_host{ host_, port_, username_, password_ };
 	}
 
 	bool operator==(amqp_host const& l, amqp_host const& r)
 	{
-		return l.uri.host == r.uri.host
+		return l.host == r.host
+			&& l.port == r.port
 			&& l.user == r.user
 			&& l.password == r.password;
+	}
+
+	bool operator!=(amqp_host const& l, amqp_host const& r)
+	{
+		return !(l == r);
 	}
 }

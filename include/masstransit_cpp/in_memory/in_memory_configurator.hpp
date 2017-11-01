@@ -15,12 +15,9 @@ namespace masstransit_cpp
 	public:
 		in_memory_configurator & receive_endpoint(std::string const& queue_name, std::function<void(in_memory::receive_endpoint_configurator&)> const& configure);
 
-		in_memory_configurator & transport_concurrency_limit(size_t limit);
-
-		std::shared_ptr<bus> build();
+		std::shared_ptr<bus> build() const;
 	
 	private:
 		std::map<std::string, in_memory::receive_endpoint_configurator> receive_endpoints_;
-		size_t transport_concurrency_limit_{ 1 };
 	};
 }

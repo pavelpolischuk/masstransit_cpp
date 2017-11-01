@@ -24,13 +24,7 @@ namespace masstransit_cpp
 		return *this;
 	}
 
-	in_memory_configurator& in_memory_configurator::transport_concurrency_limit(size_t limit)
-	{
-		transport_concurrency_limit_ = limit;
-		return *this;
-	}
-
-	std::shared_ptr<bus> in_memory_configurator::build()
+	std::shared_ptr<bus> in_memory_configurator::build() const
 	{
 		std::vector<receive_endpoint::factory> receivers_factories;
 		for (auto const& receive_factory : receive_endpoints_)
