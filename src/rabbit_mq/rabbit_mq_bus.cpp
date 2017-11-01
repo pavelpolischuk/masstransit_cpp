@@ -17,8 +17,7 @@ namespace masstransit_cpp
 		, target_host_(target_host)
 		, client_info_(client_info)
 	{
-		//queue_channel_ = AmqpClient::Channel::Create(target_host_.host, target_host_.port, target_host_.user, target_host_.password);
-		queue_channel_ = AmqpClient::Channel::CreateSecure("", target_host_.host, "", "", target_host_.port, target_host_.user, target_host_.password);
+		queue_channel_ = AmqpClient::Channel::Create(target_host_.host, target_host_.port, target_host_.user, target_host_.password);
 	}
 
 	rabbit_mq_bus::~rabbit_mq_bus()
