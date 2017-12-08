@@ -41,7 +41,7 @@ namespace masstransit_cpp
 
 		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build(receive_endpoint_configurator configurator)
 		{
-			auto channel = AmqpClient::Channel::CreateFromUri(configurator.host_.to_string());
+			auto channel = configurator.host_.create_channel();
 			channel->DeclareQueue(configurator.queue_, false, true, false, configurator.auto_delete_);
 			return std::make_shared<receive_endpoint>(channel, configurator.queue_, configurator.prefetch_count_, configurator.timeout_, configurator.create_consumers());
 		}
