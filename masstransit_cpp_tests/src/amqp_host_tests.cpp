@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include <masstransit_cpp/rabbit_mq/amqp_host.hpp>
+#include <masstransit_cpp/rabbit_mq/amqp_host_configurator.hpp>
 
 namespace masstransit_cpp_tests
 {

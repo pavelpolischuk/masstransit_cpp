@@ -1,7 +1,7 @@
 #pragma once
 
 #include <masstransit_cpp/global.hpp>
-#include <masstransit_cpp/rabbit_mq/amqp_host.hpp>
+#include <masstransit_cpp/rabbit_mq/amqp_host_configurator.hpp>
 #include <masstransit_cpp/rabbit_mq/receive_endpoint_configurator.hpp>
 
 #include <memory>
@@ -28,5 +28,6 @@ namespace masstransit_cpp
 		bool auto_delete_{ false };
 		host_info client_info_;
 		amqp_host host_;
+		boost::optional<ssl_config> ssl_;
 	};
 }

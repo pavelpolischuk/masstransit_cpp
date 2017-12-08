@@ -62,6 +62,7 @@ set(SOURCE_FILES
 	include/masstransit_cpp/rabbit_mq/receive_endpoint.hpp
 	include/masstransit_cpp/rabbit_mq/receive_endpoint_configurator.hpp
 	include/masstransit_cpp/rabbit_mq/amqp_host.hpp
+	include/masstransit_cpp/rabbit_mq/amqp_host_configurator.hpp
 	include/masstransit_cpp/in_memory/in_memory_bus.hpp
 	include/masstransit_cpp/in_memory/in_memory_configurator.hpp
 	include/masstransit_cpp/in_memory/receive_endpoint.hpp
@@ -84,6 +85,7 @@ set(SOURCE_FILES
 	src/in_memory/in_memory_bus.cpp
 	src/in_memory/in_memory_configurator.cpp
 	src/rabbit_mq/amqp_host.cpp
+	src/rabbit_mq/amqp_host_configurator.cpp
 	src/rabbit_mq/exchange_manager.cpp
 	src/rabbit_mq/rabbit_mq_bus.cpp
 	src/rabbit_mq/rabbit_mq_configurator.cpp
@@ -94,32 +96,7 @@ set(SOURCE_FILES
 	src/threads/worker_thread.cpp
 	)
 
-macro(OrganizeSources)
-    foreach (_srcFile ${ARGN})
-        get_filename_component(folder ${_srcFile} DIRECTORY)
-        if ("${folder}_" STREQUAL "_")
-            set(_NoSrcGroupFiles ${_NoSrcGroupFiles} ${_srcFile})
-            continue()
-        endif ("${folder}_" STREQUAL "_")
-        string(REPLACE "/" "\\" _srcGroupName ${folder})
-        set(_srcGroupFilesList "${_srcGroupName}_files")
-        set(${_srcGroupName}_FILES ${${_srcGroupName}_FILES} ${_srcFile})
-        list(LENGTH ${_srcGroupName}_FILES _currentGroupSize)
-        if (${_currentGroupSize} EQUAL 1)
-            set(_sourceGroups ${_sourceGroups} ${_srcGroupName})
-        endif ()
-    endforeach ()
-    foreach (_srcGroup ${_sourceGroups})
-        if (${CMAKE_VERBOSE_MAKEFILE})
-            message("adding source group ${_srcGroup}")
-            message("files in group:${${_srcGroup}_FILES}")
-        endif (${CMAKE_VERBOSE_MAKEFILE})
-        source_group(${_srcGroup} FILES ${${_srcGroup}_FILES})
-    endforeach ()
-    source_group("" FILES ${_NoSrcGroupFiles})
-endmacro(OrganizeSources)
-
-OrganizeSources(${SOURCE_FILES})
+source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
 
 # Build
 
