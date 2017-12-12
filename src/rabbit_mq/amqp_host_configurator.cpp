@@ -2,8 +2,9 @@
 
 namespace masstransit_cpp
 {	
-	amqp_host_configurator::amqp_host_configurator(std::string const& host)
+	amqp_host_configurator::amqp_host_configurator(std::string const& host, std::string const& virtual_host)
 		: host_(host)
+		, vhost_(virtual_host)
 	{
 	}
 
@@ -36,6 +37,6 @@ namespace masstransit_cpp
 
 	amqp_host amqp_host_configurator::get_host() const
 	{
-		return amqp_host{ host_, port_, username_, password_, ssl_ };
+		return amqp_host{ host_, port_, vhost_, username_, password_, ssl_ };
 	}
 }

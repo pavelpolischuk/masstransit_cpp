@@ -6,10 +6,16 @@ namespace masstransit_cpp
 {
 	const std::string amqp_host::localhost{ "127.0.0.1" };
 
-	amqp_host::amqp_host(std::string const& host, int port, 
+	amqp_host::amqp_host(std::string const& host)
+		: host(host)
+	{
+	}
+
+	amqp_host::amqp_host(std::string const& host, int port, std::string const& virtual_host,
 		std::string const& user, std::string const& password,
 		boost::optional<ssl_config> const& ssl)
 		: host(host)
+		, vhost(virtual_host)
 		, port(port)
 		, user(user)
 		, password(password)
@@ -29,18 +35,18 @@ namespace masstransit_cpp
 			res << '@';
 		}
 
-		res << host;
+		res << host << vhost;
 		return res.str();
 	}
 
 	boost::shared_ptr<AmqpClient::Channel> amqp_host::create_channel() const
 	{
 		if (!ssl)
-			return AmqpClient::Channel::Create(host, port, user, password);
+			return AmqpClient::Channel::Create(host, port, user, password, vhost);
 		
 		auto ssl_ = ssl.get();
 		return AmqpClient::Channel::CreateSecure(ssl_.path_to_ca_cert, host, 
-			ssl_.path_to_client_key, ssl_.path_to_client_cert, port, user, password);
+			ssl_.path_to_client_key, ssl_.path_to_client_cert, port, user, password, vhost, 131072, ssl_.verify_hostname);
 	}
 
 	bool operator==(ssl_config const& lhs, ssl_config const& rhs)
@@ -59,6 +65,7 @@ namespace masstransit_cpp
 	bool operator==(amqp_host const& l, amqp_host const& r)
 	{
 		return l.host == r.host
+			&& l.vhost == r.vhost
 			&& l.port == r.port
 			&& l.user == r.user
 			&& l.password == r.password

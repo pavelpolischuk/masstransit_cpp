@@ -22,17 +22,19 @@ namespace masstransit_cpp
 
 	struct MASSTRANSIT_CPP_API amqp_host
 	{
-		explicit amqp_host(std::string const& host, int port = 5672,
-			std::string const& user = "", std::string const& password = "",
-			boost::optional<ssl_config> const& ssl = boost::none);
+		explicit amqp_host(std::string const& host);
+		amqp_host(std::string const& host, int port, std::string const& virtual_host,
+			std::string const& user, std::string const& password,
+			boost::optional<ssl_config> const& ssl);
 
 		std::string host;
-		int port;
+		std::string vhost{ "/" };
+		int port{ 5672 };
 		std::string user;
 		std::string password;
 		boost::optional<ssl_config> ssl;
 
-		std::string to_string() const;  // "amqp://username:password@host"
+		std::string to_string() const;  // "amqp://username:password@host/"
 
 		boost::shared_ptr<AmqpClient::Channel> create_channel() const;
 		
