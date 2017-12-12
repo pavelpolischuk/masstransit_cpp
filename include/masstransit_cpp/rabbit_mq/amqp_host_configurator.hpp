@@ -12,7 +12,7 @@ namespace masstransit_cpp
 	class MASSTRANSIT_CPP_API amqp_host_configurator
 	{
 	public:
-		explicit amqp_host_configurator(std::string const& host);
+		explicit amqp_host_configurator(std::string const& host_address, std::string const& virtual_host = "/");
 
 		amqp_host_configurator & port(int port);
 		amqp_host_configurator & username(std::string const& username);
@@ -23,6 +23,7 @@ namespace masstransit_cpp
 
 	private:
 		std::string host_;
+		std::string vhost_;
 		int port_{ 5672 };
 		std::string username_;
 		std::string password_;
