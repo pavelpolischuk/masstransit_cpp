@@ -32,4 +32,3 @@ add_executable(masstransit_tests
 )
 
 target_link_libraries(masstransit_tests masstransit_cpp)
-add_executable(masstransit_tests masstransit_tests)
