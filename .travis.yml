@@ -3,16 +3,23 @@
 
 language: cpp
 
+dist: trusty
+sudo: true
+
 compiler:
   - gcc
-  - clang
+
+addons:
+  apt:
+    sources:
+      - george-edison55-precise-backports
+      - ubuntu-toolchain-r-test
+    packages:
+      - cmake-data
+      - cmake
+      - g++-4.9
 
 services: rabbitmq
-
-env:
-  global:
-   - secure: ""
-
    
 install:
   - sudo apt-get update
