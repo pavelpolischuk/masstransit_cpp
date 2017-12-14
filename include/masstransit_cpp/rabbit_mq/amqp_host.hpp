@@ -4,6 +4,7 @@
 
 #include <string>
 #include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace AmqpClient { class Channel; }
 
