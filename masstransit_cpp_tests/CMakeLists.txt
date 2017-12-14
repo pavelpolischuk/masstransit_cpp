@@ -1,5 +1,5 @@
+include_directories(SYSTEM ${BOOST_DI_DIR}/include)
 include_directories(../include)
-include_directories(${BOOST_DI_DIR}/include)
 
 set(CXX_STANDARD "c++14")
 
@@ -13,7 +13,7 @@ else()
     message(WARNING "Unsupported compiler!")
 endif()
 
-add_executable(masstransit_cpp_tests 
+add_executable(masstransit_tests 
 	src/catch.hpp
 	src/message_mock.hpp
 	src/message_consumer_mock.hpp
@@ -31,5 +31,5 @@ add_executable(masstransit_cpp_tests
 	src/worker_tests.cpp
 )
 
-target_link_libraries(masstransit_cpp_tests masstransit_cpp)
-add_test(masstransit_cpp_tests masstransit_cpp_tests)
+target_link_libraries(masstransit_tests masstransit_cpp)
+add_test(masstransit_tests masstransit_tests)
