@@ -20,7 +20,7 @@ services: rabbitmq
    
 install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libboost-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev libboost-log-dev libboost-system-dev libboost-thread-dev
+  - sudo apt-get install -y libboost1.55-dev libboost-chrono1.55-dev libboost-date-time1.55-dev libboost-filesystem1.55-dev libboost-log1.55-dev libboost-system1.55-dev libboost-thread1.55-dev
   - CXX=/usr/bin/g++-6 CC=/usr/bin/gcc-6
   - export INSTALL_PREFIX=`pwd`/_install
   - mkdir -p _prereqs
@@ -28,8 +28,9 @@ install:
   - pushd _prereqs
   - git clone --single-branch https://github.com/boost-experimental/di.git
   - export BOOST_DI_DIR=`pwd`/di
-  - git clone --single-branch https://github.com/alanxz/rabbitmq-c.git
+  - git clone https://github.com/alanxz/rabbitmq-c.git
   - cd rabbitmq-c
+  - git checkout v0.8.0
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_TOOLS=OFF -DENABLE_SSL_SUPPORT=${RABBITMQC_SSL} .
   - cmake --build . --target install
   - cd ..
@@ -46,8 +47,7 @@ before_script:
 
 # Run the Build script
 script:
-  - echo "${INSTALL_PREFIX}"
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DSimpleAmqpClient_DIR="${INSTALL_PREFIX}" -DBOOST_DI_DIR=${BOOST_DI_DIR} ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DSimpleAmqpClient_DIR=${INSTALL_PREFIX} -DBOOST_DI_DIR=${BOOST_DI_DIR} ..
   - cmake --build . --target install
     
 after_script:
