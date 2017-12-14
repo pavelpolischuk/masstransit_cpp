@@ -25,15 +25,19 @@ link_directories(${Boost_LIBRARY_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_NO_LIB -DBOOST_LOG_DYN_LINK")
 set(AdditionalLibraries ${AdditionalLibraries} ${Boost_LIBRARIES})
 
-
 if(NOT SimpleAmqpClient_DIR)
 	set(SimpleAmqpClient_DIR "${CMAKE_CURRENT_SOURCE_DIR}/_install")
+endif()
+
+if(NOT Rabbitmqc_DIR)
+	set(Rabbitmqc_DIR "${CMAKE_CURRENT_SOURCE_DIR}/_install")
 endif()
 
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(SimpleAmqpClient REQUIRED)
 include_directories(SYSTEM ${SimpleAmqpClient_INCLUDE_DIRS})
-set(AdditionalLibraries ${AdditionalLibraries} ${SimpleAmqpClient_LIBRARIES})
+find_package(Rabbitmqc REQUIRED)
+set(AdditionalLibraries ${AdditionalLibraries} ${SimpleAmqpClient_LIBRARIES} ${Rabbitmqc_LIBRARIES})
 
 
 # Sources
