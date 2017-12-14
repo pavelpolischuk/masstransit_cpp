@@ -22,8 +22,8 @@ install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libboost-dev libboost-chrono-dev libboost-date-time-dev libboost-filesystem-dev libboost-log-dev libboost-system-dev libboost-thread-dev
   - CXX=/usr/bin/g++-6 CC=/usr/bin/gcc-6
-  - mkdir -p _prereqs
   - export INSTALL_PREFIX=`pwd`/_install
+  - mkdir -p _prereqs
   - export RABBITMQC_SSL=ON
   - pushd _prereqs
   - git clone --single-branch https://github.com/boost-experimental/di.git
@@ -46,8 +46,9 @@ before_script:
 
 # Run the Build script
 script:
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DSimpleAmqpClient_DIR=${INSTALL_PREFIX} -DBOOST_DI_DIR=${BOOST_DI_DIR} .. && 
-    cmake --build . --target install ;
+  - echo "${INSTALL_PREFIX}"
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DSimpleAmqpClient_DIR="${INSTALL_PREFIX}" -DBOOST_DI_DIR=${BOOST_DI_DIR} ..
+  - cmake --build . --target install
     
 after_script:
-  - LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib ctest -V . ;
+  - LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib ctest -V .
