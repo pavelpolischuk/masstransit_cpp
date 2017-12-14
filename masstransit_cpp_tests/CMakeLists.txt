@@ -32,7 +32,6 @@ add_executable(masstransit_cpp_tests
 )
 
 target_link_libraries(masstransit_cpp_tests masstransit_cpp)
-add_test(masstransit_cpp_tests masstransit_cpp_tests)
 
 install(TARGETS masstransit_cpp_tests
     RUNTIME DESTINATION bin

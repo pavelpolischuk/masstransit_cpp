@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.8.2)
 
 project(masstransit_cpp)
 
@@ -18,9 +18,6 @@ set(MTC_SOVERSION ${_VERSION_MAJOR})
 
 
 # Dependencies
-if(NOT BOOST_ROOT)
-	set(BOOST_ROOT "c:/Projects/boost_1_61_0")
-endif()
 
 find_package(Boost REQUIRED COMPONENTS log date_time)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
@@ -37,6 +34,7 @@ SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(SimpleAmqpClient REQUIRED)
 include_directories(SYSTEM ${SimpleAmqpClient_INCLUDE_DIRS})
 set(AdditionalLibraries ${AdditionalLibraries} ${SimpleAmqpClient_LIBRARIES})
+
 
 # Sources
 
@@ -130,6 +128,7 @@ if (BUILD_TESTS)
     enable_testing()
     set(BUILD_SHARED_LIBS OFF)
     add_subdirectory(masstransit_cpp_tests)
+	add_test(masstransit_cpp_tests masstransit_cpp_tests)
 endif (BUILD_TESTS)
 
 
@@ -140,20 +139,39 @@ install(TARGETS masstransit_cpp
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
 )
-	
-install(FILES
-    include/masstransit_cpp/bus.hpp
+
+install(FILES	
+	include/masstransit_cpp/bus.hpp
+	include/masstransit_cpp/bus_control.hpp
     include/masstransit_cpp/bus_factory.hpp
 	include/masstransit_cpp/consume_context.hpp
-	include/masstransit_cpp/exchange_manager.hpp
 	include/masstransit_cpp/global.hpp
 	include/masstransit_cpp/host_info.hpp
-	include/masstransit_cpp/i_bus_control.hpp
+	include/masstransit_cpp/i_message_consumer.hpp
 	include/masstransit_cpp/i_publish_endpoint.hpp
 	include/masstransit_cpp/json.hpp
+	include/masstransit_cpp/json_adapters.hpp
 	include/masstransit_cpp/message_consumer.hpp
-	include/masstransit_cpp/receive_endpoint.hpp
-	include/masstransit_cpp/send_endpoint.hpp
-	include/masstransit_cpp/uri.hpp
+	include/masstransit_cpp/message_handler.hpp
+	include/masstransit_cpp/i_receive_endpoint.hpp
+	include/masstransit_cpp/i_receive_endpoint_configurator.hpp
+
+	include/masstransit_cpp/rabbit_mq/exchange_manager.hpp
+	include/masstransit_cpp/rabbit_mq/rabbit_mq_bus.hpp
+	include/masstransit_cpp/rabbit_mq/rabbit_mq_configurator.hpp
+	include/masstransit_cpp/rabbit_mq/receive_endpoint.hpp
+	include/masstransit_cpp/rabbit_mq/receive_endpoint_configurator.hpp
+	include/masstransit_cpp/rabbit_mq/amqp_host.hpp
+	include/masstransit_cpp/rabbit_mq/amqp_host_configurator.hpp
+	include/masstransit_cpp/in_memory/in_memory_bus.hpp
+	include/masstransit_cpp/in_memory/in_memory_configurator.hpp
+	include/masstransit_cpp/in_memory/receive_endpoint.hpp
+	include/masstransit_cpp/in_memory/receive_endpoint_configurator.hpp
+	include/masstransit_cpp/threads/tasks_queue.hpp
+	include/masstransit_cpp/threads/thread_pool.hpp
+	include/masstransit_cpp/threads/worker.hpp
+	include/masstransit_cpp/threads/worker_thread.hpp
+	include/masstransit_cpp/threads/task_repeat.hpp
+	
     DESTINATION include/masstransit_cpp
 )

@@ -1,0 +1,48 @@
+# Travis-CI Build for masstransit_cpp
+# see travis-ci.org for details
+
+language: cpp
+
+compiler:
+  - gcc
+  - clang
+
+services: rabbitmq
+
+env:
+  global:
+   - secure: ""
+
+   
+install:
+  - sudo apt-get update
+  - sudo apt-get install libboost1.61-dev libboost-chrono1.61-dev libboost-date-time1.61-dev libboost-filesystem1.61-dev libboost-log1.61-dev libboost-system1.61-dev libboost-thread1.61-dev
+  - mkdir -p _prereqs
+  - export INSTALL_PREFIX=`pwd`/_install
+  - export RABBITMQC_SSL=ON
+  - pushd _prereqs
+  - git clone --single-branch https://github.com/boost-experimental/di.git
+  - export BOOST_DI_DIR=`pwd`/di
+  - git clone --single-branch https://github.com/alanxz/rabbitmq-c.git
+  - cd rabbitmq-c
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_TOOLS=OFF -DENABLE_SSL_SUPPORT=${RABBITMQC_SSL} .
+  - cmake --build . --target install
+  - cd ..
+  - git clone --single-branch https://github.com/alanxz/SimpleAmqpClient.git
+  - cd SimpleAmqpClient
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_TESTS=OFF -DRabbitmqc_DIR=${INSTALL_PREFIX} -DRabbitmqc_SSL_ENABLED=${RABBITMQC_SSL} .
+  - cmake --build . --target install
+  - popd
+
+before_script:
+  - mkdir _build
+  - cd _build
+  - pwd
+
+# Run the Build script
+script:
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DSimpleAmqpClient_DIR=${INSTALL_PREFIX} -DBOOST_DI_DIR=${BOOST_DI_DIR} ..
+  - cmake --build . --target install
+    
+after_script:
+  - LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib ctest -V .
