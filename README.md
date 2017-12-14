@@ -1,6 +1,6 @@
-# Masstransit_cpp
+# Masstransit_cpp [![Build Status](https://travis-ci.org/pavelpolischuk/masstransit_cpp.svg?branch=master)](https://travis-ci.org/pavelpolischuk/masstransit_cpp)
 
-AMQP message publishing and consuming library. Like and a little compatible with Masstransit for .Net.
+AMQP message publishing and consuming library. Like and a little compatible with [MassTransit for .Net](https://github.com/MassTransit/MassTransit). It's using [SimpleAmqpClient](https://github.com/alanxz/SimpleAmqpClient).
 
 ### Quick start
 
