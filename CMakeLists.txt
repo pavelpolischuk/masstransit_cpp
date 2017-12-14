@@ -130,7 +130,6 @@ if (BUILD_TESTS)
     enable_testing()
     set(BUILD_SHARED_LIBS OFF)
     add_subdirectory(masstransit_cpp_tests)
-	add_test(masstransit_cpp_tests masstransit_cpp_tests)
 endif (BUILD_TESTS)
 
 
@@ -145,7 +144,7 @@ install(TARGETS masstransit_cpp
 install(FILES	
 	include/masstransit_cpp/bus.hpp
 	include/masstransit_cpp/bus_control.hpp
-    include/masstransit_cpp/bus_factory.hpp
+	include/masstransit_cpp/bus_factory.hpp
 	include/masstransit_cpp/consume_context.hpp
 	include/masstransit_cpp/global.hpp
 	include/masstransit_cpp/host_info.hpp
@@ -175,5 +174,5 @@ install(FILES
 	include/masstransit_cpp/threads/worker_thread.hpp
 	include/masstransit_cpp/threads/task_repeat.hpp
 	
-    DESTINATION include/masstransit_cpp
+	DESTINATION include/masstransit_cpp
 )
