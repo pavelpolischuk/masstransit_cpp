@@ -46,8 +46,8 @@ before_script:
 
 # Run the Build script
 script:
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DSimpleAmqpClient_DIR=${INSTALL_PREFIX} -DBOOST_DI_DIR=${BOOST_DI_DIR} ..
-  - cmake --build . --target install
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DSimpleAmqpClient_DIR=${INSTALL_PREFIX} -DBOOST_DI_DIR=${BOOST_DI_DIR} .. && 
+    cmake --build . --target install ;
     
 after_script:
-  - LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib ctest -V .
+  - LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib ctest -V . ;
