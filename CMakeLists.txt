@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.2)
 
 project(masstransit_cpp)
 
@@ -94,7 +94,9 @@ set(SOURCE_FILES
 	src/threads/worker_thread.cpp
 	)
 
-source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
+if(${CMAKE_VERSION} GREATER_EQUAL 3.8.2)
+	source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
+endif()
 
 # Build
 
