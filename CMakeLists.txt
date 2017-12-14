@@ -135,6 +135,7 @@ if (BUILD_TESTS)
     enable_testing()
     set(BUILD_SHARED_LIBS OFF)
     add_subdirectory(masstransit_cpp_tests)
+    add_test(masstransit_tests masstransit_tests)
 endif (BUILD_TESTS)
 
 
