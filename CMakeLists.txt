@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.6)
 
 project(masstransit_cpp)
 
@@ -25,18 +25,10 @@ link_directories(${Boost_LIBRARY_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_NO_LIB -DBOOST_LOG_DYN_LINK")
 set(AdditionalLibraries ${AdditionalLibraries} ${Boost_LIBRARIES})
 
-if(NOT SimpleAmqpClient_DIR)
-	set(SimpleAmqpClient_DIR "${CMAKE_CURRENT_SOURCE_DIR}/_install")
-endif()
-
-if(NOT Rabbitmqc_DIR)
-	set(Rabbitmqc_DIR "${CMAKE_CURRENT_SOURCE_DIR}/_install")
-endif()
-
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(SimpleAmqpClient REQUIRED)
-include_directories(SYSTEM ${SimpleAmqpClient_INCLUDE_DIRS})
 find_package(Rabbitmqc REQUIRED)
+include_directories(SYSTEM ${SimpleAmqpClient_INCLUDE_DIRS})
 set(AdditionalLibraries ${AdditionalLibraries} ${SimpleAmqpClient_LIBRARIES} ${Rabbitmqc_LIBRARIES})
 
 
@@ -135,7 +127,7 @@ if (BUILD_TESTS)
     enable_testing()
     set(BUILD_SHARED_LIBS OFF)
     add_subdirectory(masstransit_cpp_tests)
-    add_test(masstransit_tests masstransit_tests)
+    add_test(masstransit_tests masstransit_tests WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif (BUILD_TESTS)
 
 
@@ -146,8 +138,8 @@ install(TARGETS masstransit_cpp
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
 )
-
-install(FILES	
+	
+install(FILES
 	include/masstransit_cpp/bus.hpp
 	include/masstransit_cpp/bus_control.hpp
 	include/masstransit_cpp/bus_factory.hpp
@@ -179,6 +171,6 @@ install(FILES
 	include/masstransit_cpp/threads/worker.hpp
 	include/masstransit_cpp/threads/worker_thread.hpp
 	include/masstransit_cpp/threads/task_repeat.hpp
-	
+    
 	DESTINATION include/masstransit_cpp
 )

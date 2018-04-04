@@ -1,4 +1,4 @@
-include_directories(SYSTEM ${BOOST_DI_DIR}/include)
+include_directories(${BOOST_DI_DIR}/include)
 include_directories(../include)
 
 set(CXX_STANDARD "c++14")
@@ -32,3 +32,9 @@ add_executable(masstransit_tests
 )
 
 target_link_libraries(masstransit_tests masstransit_cpp)
+
+install(TARGETS masstransit_tests
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+)

@@ -8,11 +8,6 @@ namespace masstransit_cpp_tests
 
 	TEST_CASE("amqp_host_tests", "[amqp_host]")
 	{
-		SECTION("local_uri")
-		{
-			REQUIRE(amqp_host::localhost == "127.0.0.1");
-		}
-
 		SECTION("host_configurator::get_host")
 		{
 			amqp_host_configurator configurator("192.16.128.1");

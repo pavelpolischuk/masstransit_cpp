@@ -13,5 +13,10 @@ namespace masstransit_cpp
 		{
 			stop();
 		}
+
+		void worker_thread::wait() const
+		{
+			worker_.attach();
+		}
 	}
 }

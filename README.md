@@ -32,7 +32,7 @@ void from_json(nlohmann::json const& j, person & p) {
 
 #### Create message consumer
 
-Consumer have to extend `masstransit_cpp::message_consumer<message_t>` and override `void consume(masstransit_cpp::consume_context<message_t> const&)`.
+Consumer has to extend `masstransit_cpp::message_consumer<message_t>` and override `void consume(masstransit_cpp::consume_context<message_t> const&)`.
 
 ```cpp
 #include <my_message.hpp>
@@ -82,8 +82,8 @@ auto bus = masstransit_cpp::bus_factory::create_using_rabbit_mq([=](masstransit_
 
 #### Publish message
 
-Bus implement interface `masstransit_cpp::i_bus` and has template method `void publish<message_t>(message_t const&)`.
-You need pass your configured `bus` as dependence where you want to publish message.
+Bus implements interface `masstransit_cpp::i_bus` and has template method `void publish<message_t>(message_t const&)`.
+You need pass your configured `bus` as dependency where you want to publish message.
 
 ```cpp
 void publish_foo(std::shared_ptr<i_publish_endpoint> const& bus) {
@@ -98,7 +98,7 @@ void publish_foo(std::shared_ptr<i_publish_endpoint> const& bus) {
 
 #### Configure consumers using Boost.DI
 
-If you use dependency injection, your consumers may depends on bus (handle some message and publish new one). You can configure bus use Boost.DI.
+If you use dependency injection, your consumers may depend on bus (handle some message and publish new one). You can configure bus with Boost.DI.
 
 ```cpp
 #include <my_message.hpp>

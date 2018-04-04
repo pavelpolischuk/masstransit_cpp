@@ -13,6 +13,7 @@ namespace masstransit_cpp
 		~in_memory_bus() override;
 
 		void start() override;
+		void wait() const override;
 		void stop() override;
 		
 	protected:
@@ -21,6 +22,6 @@ namespace masstransit_cpp
 	private:
 		const std::vector<in_memory::receive_endpoint::factory> receivers_factories_;
 		std::vector<std::shared_ptr<in_memory::receive_endpoint>> receivers_;
-		std::unique_ptr<threads::worker_thread> publish_worker_;
+		std::shared_ptr<threads::worker_thread> publish_worker_;
 	};
 }
