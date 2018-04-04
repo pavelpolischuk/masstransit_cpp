@@ -1,7 +1,6 @@
 #pragma once
 
 #include <masstransit_cpp/global.hpp>
-#include <thread>
 #include <future>
 #include <type_traits>
 
@@ -20,7 +19,7 @@ namespace masstransit_cpp
 			task_repeat(std::chrono::duration<D_Rep, D_Period> const& wait_interval, F&& f, Args&&... args)
 			{
 				auto task = std::bind<bool>(std::forward<F>(f), std::forward<Args>(args)...);
-				thread_ = std::thread(
+				future_ = std::async(std::launch::async,
 					[wait_interval, task, this]()
 					{
 						while (!stop_)
@@ -31,13 +30,18 @@ namespace masstransit_cpp
 								condition_.wait_for(lock, wait_interval, [this] { return stop_; });
 							}
 						}
-					} );
+					});
 			}
 
 			~task_repeat()
 			{
 				stop();
-				thread_.join();
+				if (future_.valid()) future_.wait();
+			}
+
+			void wait() const
+			{
+				if (future_.valid()) future_.wait();
 			}
 
 			void stop()
@@ -51,9 +55,9 @@ namespace masstransit_cpp
 			}
 
 		protected:
-			std::thread thread_;
 			std::mutex mutex_;
 			std::condition_variable condition_;
+			std::future<void> future_;
 			bool stop_{ false };
 		};
 	}

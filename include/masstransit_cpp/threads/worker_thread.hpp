@@ -10,8 +10,9 @@ namespace masstransit_cpp
 		{
 		public:
 			worker_thread();
-
 			virtual ~worker_thread();
+
+			void wait() const;
 
 		protected:
 			worker worker_;

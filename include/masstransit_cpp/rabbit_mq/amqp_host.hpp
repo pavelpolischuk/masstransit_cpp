@@ -17,8 +17,8 @@ namespace masstransit_cpp
 		std::string path_to_client_cert;
 		bool verify_hostname{ false };
 
-		friend bool operator==(ssl_config const& lhs, ssl_config const& rhs);
-		friend bool operator!=(ssl_config const& lhs, ssl_config const& rhs);
+		friend bool MASSTRANSIT_CPP_API operator==(ssl_config const& lhs, ssl_config const& rhs);
+		friend bool MASSTRANSIT_CPP_API operator!=(ssl_config const& lhs, ssl_config const& rhs);
 	};
 
 	struct MASSTRANSIT_CPP_API amqp_host
@@ -41,7 +41,7 @@ namespace masstransit_cpp
 		
 		static const std::string localhost;
 
-		friend bool operator == (amqp_host const& l, amqp_host const& r);
-		friend bool operator != (amqp_host const& l, amqp_host const& r);
+		friend bool MASSTRANSIT_CPP_API operator == (amqp_host const& l, amqp_host const& r);
+		friend bool MASSTRANSIT_CPP_API operator != (amqp_host const& l, amqp_host const& r);
 	};
 }

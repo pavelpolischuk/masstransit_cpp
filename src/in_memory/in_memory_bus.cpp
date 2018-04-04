@@ -20,7 +20,14 @@ namespace masstransit_cpp
 			receivers_.push_back(factory());
 		}
 
-		publish_worker_ = std::make_unique<threads::worker_thread>();
+		publish_worker_ = std::make_shared<threads::worker_thread>();
+	}
+
+	void in_memory_bus::wait() const
+	{
+		const auto worker = publish_worker_;
+		if (worker != nullptr)
+			worker->wait();
 	}
 
 	void in_memory_bus::stop()

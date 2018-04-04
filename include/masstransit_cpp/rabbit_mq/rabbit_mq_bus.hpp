@@ -21,6 +21,7 @@ namespace masstransit_cpp
 		~rabbit_mq_bus() override;
 
 		void start() override;
+		void wait() const override;
 		void stop() override;
 
 	protected:
@@ -34,7 +35,7 @@ namespace masstransit_cpp
 		const amqp_host target_host_;
 		const host_info client_info_;
 
-		std::unique_ptr<threads::task_repeat> receiving_loop_;
+		std::shared_ptr<threads::task_repeat> receiving_loop_;
 		std::unique_ptr<threads::worker_thread> publish_worker_;
 
 		bool process_input_messages();

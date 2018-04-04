@@ -5,7 +5,7 @@ namespace masstransit_cpp
 	namespace threads
 	{
 		worker::worker(tasks_queue & queue)
-			: thread_([this, &queue]()
+			: future_(std::async(std::launch::async, [this, &queue]()
 				{
 					while (true)
 					{
@@ -27,13 +27,18 @@ namespace masstransit_cpp
 
 						task();
 					}
-				})
+				}))
 		{
 		}
 
 		worker::~worker()
 		{
-			thread_.join();
+			if (future_.valid()) future_.wait();
+		}
+
+		void worker::attach() const
+		{
+			if (future_.valid()) future_.wait();
 		}
 	}
 }
