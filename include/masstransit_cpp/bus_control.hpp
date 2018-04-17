@@ -10,6 +10,7 @@ namespace masstransit_cpp
 		virtual ~bus_control() = default;
 
 		virtual void start() = 0;
+		virtual void wait() const = 0;
 		virtual void stop() = 0;
 	};
 }

@@ -70,7 +70,6 @@ namespace masstransit_cpp_tests
 				});
 			});
 
-
 			bus->start();
 			auto published = bus->publish(message_mock(42)).get();
 			bus->stop();
