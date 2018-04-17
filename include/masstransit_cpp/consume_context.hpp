@@ -38,11 +38,11 @@ namespace masstransit_cpp
 
 		host_info send_host;
 
-		friend bool operator==(consume_context_info const& lhv, consume_context_info const& rhv);
+		friend bool MASSTRANSIT_CPP_API operator==(consume_context_info const& lhv, consume_context_info const& rhv);
 	};
 
-	void to_json(nlohmann::json& j, consume_context_info const& p);
-	void from_json(nlohmann::json const& j, consume_context_info & p);
+	void MASSTRANSIT_CPP_API to_json(nlohmann::json& j, consume_context_info const& p);
+	void MASSTRANSIT_CPP_API from_json(nlohmann::json const& j, consume_context_info & p);
 
 
 	template<class message_t>

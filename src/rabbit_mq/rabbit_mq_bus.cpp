@@ -33,14 +33,22 @@ namespace masstransit_cpp
 			receivers_.push_back(receiver);
 		}
 
-		receiving_loop_ = std::make_unique<threads::task_repeat>(std::chrono::seconds(15), &rabbit_mq_bus::process_input_messages, this);
+		receiving_loop_ = std::make_shared<threads::task_repeat>(std::chrono::seconds(15), &rabbit_mq_bus::process_input_messages, this);
 		publish_worker_ = std::make_unique<threads::worker_thread>();
 	}
 
+	void rabbit_mq_bus::wait() const
+	{
+		const auto loop = receiving_loop_;
+		if(loop != nullptr)
+			loop->wait();
+	}
+	
 	void rabbit_mq_bus::stop()
 	{
-		receiving_loop_ = nullptr;
+		receiving_loop_->stop();
 		publish_worker_ = nullptr;
+		receiving_loop_ = nullptr;
 		receivers_.clear();
 	}
 

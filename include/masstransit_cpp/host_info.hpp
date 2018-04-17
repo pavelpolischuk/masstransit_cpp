@@ -21,6 +21,6 @@ namespace masstransit_cpp
 		friend bool operator==(host_info const& lhv, host_info const& rhv);
 	};
 
-	void to_json(nlohmann::json& j, host_info const& p);
-	void from_json(nlohmann::json const& j, host_info & p);
+	void MASSTRANSIT_CPP_API to_json(nlohmann::json& j, host_info const& p);
+	void MASSTRANSIT_CPP_API from_json(nlohmann::json const& j, host_info & p);
 }

@@ -11,8 +11,10 @@ namespace masstransit_cpp
 			explicit worker(tasks_queue & queue);
 			~worker();
 
+			void attach() const;
+
 		protected:
-			std::thread thread_;
+			std::future<void> future_;
 		};
 	}
 }
