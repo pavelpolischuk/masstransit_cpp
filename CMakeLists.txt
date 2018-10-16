@@ -37,8 +37,10 @@ set(AdditionalLibraries ${AdditionalLibraries} ${SimpleAmqpClient_LIBRARIES} ${R
 set(SOURCE_FILES 
 	include/masstransit_cpp/bus.hpp
 	include/masstransit_cpp/bus_control.hpp
-    include/masstransit_cpp/bus_factory.hpp
+	include/masstransit_cpp/bus_factory.hpp
 	include/masstransit_cpp/consume_context.hpp
+	include/masstransit_cpp/consume_context_info.hpp
+	include/masstransit_cpp/datetime.hpp
 	include/masstransit_cpp/global.hpp
 	include/masstransit_cpp/host_info.hpp
 	include/masstransit_cpp/i_message_consumer.hpp
@@ -51,6 +53,7 @@ set(SOURCE_FILES
 	include/masstransit_cpp/i_receive_endpoint_configurator.hpp
 
 	include/masstransit_cpp/rabbit_mq/exchange_manager.hpp
+	include/masstransit_cpp/rabbit_mq/message_publisher.hpp
 	include/masstransit_cpp/rabbit_mq/rabbit_mq_bus.hpp
 	include/masstransit_cpp/rabbit_mq/rabbit_mq_configurator.hpp
 	include/masstransit_cpp/rabbit_mq/receive_endpoint.hpp
@@ -68,7 +71,7 @@ set(SOURCE_FILES
 	include/masstransit_cpp/threads/task_repeat.hpp
 	
 	src/bus_factory.cpp
-	src/consume_context.cpp
+	src/consume_context_info.cpp
 	src/host_info.cpp
 	src/json_adapters.cpp
 	src/i_receive_endpoint.cpp
@@ -81,6 +84,7 @@ set(SOURCE_FILES
 	src/rabbit_mq/amqp_host.cpp
 	src/rabbit_mq/amqp_host_configurator.cpp
 	src/rabbit_mq/exchange_manager.cpp
+	src/rabbit_mq/message_publisher.cpp
 	src/rabbit_mq/rabbit_mq_bus.cpp
 	src/rabbit_mq/rabbit_mq_configurator.cpp
 	src/rabbit_mq/receive_endpoint.cpp
@@ -118,6 +122,8 @@ else ()
   set_target_properties(masstransit_cpp PROPERTIES VERSION ${MTC_VERSION} SOVERSION ${MTC_SOVERSION})
 endif ()
 
+set_property(GLOBAL PROPERTY USE_FOLDERS 1)
+source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
 
 # Tests
 

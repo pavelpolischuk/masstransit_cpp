@@ -2,8 +2,9 @@
 
 namespace masstransit_cpp
 {
-	i_receive_endpoint::i_receive_endpoint(consumers_map const& consumers_by_type)
+	i_receive_endpoint::i_receive_endpoint(consumers_map const& consumers_by_type, std::shared_ptr<i_publish_endpoint> const& publish_endpoint)
 		: consumers_by_type_(consumers_by_type)
+		, publish_endpoint_(publish_endpoint)
 	{
 	}
 
@@ -11,7 +12,7 @@ namespace masstransit_cpp
 	{
 		for (auto const& message_type : message_types)
 		{
-			auto consumer = consumers_by_type_.find(message_type);
+			const auto consumer = consumers_by_type_.find(message_type);
 			if (consumer != consumers_by_type_.end())
 				return consumer->second;
 		}

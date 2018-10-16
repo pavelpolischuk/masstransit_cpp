@@ -4,9 +4,9 @@ include_directories(../include)
 set(CXX_STANDARD "c++14")
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -pedantic-errors -Wall -Wextra -Werror")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -pedantic-errors -Wall -Wextra")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -pedantic-errors -Wall -Wextra -Werror")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -pedantic-errors -Wall -Wextra")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /EHsc")
 else()
@@ -32,6 +32,8 @@ add_executable(masstransit_tests
 )
 
 target_link_libraries(masstransit_tests masstransit_cpp)
+
+source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
 
 install(TARGETS masstransit_tests
     RUNTIME DESTINATION bin

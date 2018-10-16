@@ -70,7 +70,7 @@ namespace masstransit_cpp_tests
 			auto json = nlohmann::json::parse(message_context_data.begin(), message_context_data.end());
 
 			auto context_info = json.get<consume_context_info>();
-			consume_context<message_mock> context(context_info);
+			consume_context<message_mock> context(context_info, nullptr);
 
 			REQUIRE(context.info == context_info);
 			REQUIRE(context.message.id == 543210);
@@ -78,11 +78,11 @@ namespace masstransit_cpp_tests
 
 		SECTION("static_create_make_context_info_from_message")
 		{
-			message_mock message(456789);
+			const message_mock message(456789);
 			
 			auto info = consume_context_info::create(message);
-			
-			auto message_json = nlohmann::json::parse("{ \"id\": 456789 }");
+
+			const auto message_json = nlohmann::json::parse("{ \"id\": 456789 }");
 			REQUIRE(info.message.dump(0) == message_json.dump(0));
 			REQUIRE(info.message_types.size() == 1);
 			REQUIRE(info.message_types.front() == "urn:message:Test.Domain.Contracts:HandlingRequest");

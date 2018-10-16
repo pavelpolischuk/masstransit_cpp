@@ -36,14 +36,18 @@ namespace masstransit_cpp
 
 		receive_endpoint::factory receive_endpoint_configurator::get_factory() const
 		{
-			return bind(&build, *this);
+			return [config = *this](std::shared_ptr<i_publish_endpoint> const& publish_endpoint, host_info const& client_host)
+			{
+				return build(config, publish_endpoint, client_host);
+			};
 		}
 
-		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build(receive_endpoint_configurator configurator)
+		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build(receive_endpoint_configurator configurator, std::shared_ptr<i_publish_endpoint> const& publish_endpoint, host_info const& client_host)
 		{
 			auto channel = configurator.host_.create_channel();
 			channel->DeclareQueue(configurator.queue_, false, true, false, configurator.auto_delete_);
-			return std::make_shared<receive_endpoint>(channel, configurator.queue_, configurator.prefetch_count_, configurator.timeout_, configurator.create_consumers());
+			channel->DeclareQueue(receive_endpoint::get_error_queue(configurator.queue_), false, true, false, configurator.auto_delete_);
+			return std::make_shared<receive_endpoint>(channel, configurator.queue_, client_host, configurator.prefetch_count_, configurator.timeout_, configurator.create_consumers(), publish_endpoint);
 		}
 	}
 }

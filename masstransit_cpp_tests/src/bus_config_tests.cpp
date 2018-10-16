@@ -19,7 +19,7 @@ namespace masstransit_cpp_tests
 
 			auto bus = mtc::bus_factory::create_using_rabbit_mq([=](mtc::rabbit_mq_configurator & bus_configurator)
 			{
-				auto host = bus_configurator.host("localhost", [](auto & host_configurator)
+				const auto host = bus_configurator.host("localhost", [](auto & host_configurator)
 				{
 					host_configurator.username("guest");
 					host_configurator.password("guest");
@@ -50,7 +50,7 @@ namespace masstransit_cpp_tests
 
 			auto bus = mtc::bus_factory::create_using_rabbit_mq([=](mtc::rabbit_mq_configurator & bus_configurator)
 			{
-				auto host = bus_configurator.host("localhost", [](auto & host_configurator)
+				const auto host = bus_configurator.host("localhost", [](auto & host_configurator)
 				{
 					host_configurator.username("guest");
 					host_configurator.password("guest");
@@ -83,7 +83,7 @@ namespace masstransit_cpp_tests
 			auto res = 0;
 			auto bus = mtc::bus_factory::create_using_rabbit_mq([&res](mtc::rabbit_mq_configurator & bus_configurator)
 			{
-				auto host = bus_configurator.host("localhost", [](auto & host_configurator)
+				const auto host = bus_configurator.host("localhost", [](auto & host_configurator)
 				{
 					host_configurator.username("guest");
 					host_configurator.password("guest");

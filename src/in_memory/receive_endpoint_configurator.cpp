@@ -14,7 +14,7 @@ namespace masstransit_cpp
 		{
 		}
 
-		receive_endpoint_configurator& receive_endpoint_configurator::transport_concurrency_limit(size_t limit)
+		receive_endpoint_configurator& receive_endpoint_configurator::transport_concurrency_limit(const size_t limit)
 		{
 			transport_concurrency_limit_ = limit;
 			return *this;
@@ -22,12 +22,15 @@ namespace masstransit_cpp
 
 		receive_endpoint::factory receive_endpoint_configurator::get_factory() const
 		{
-			return bind(&build, *this);
+			return [config = *this](std::shared_ptr<i_publish_endpoint> const& publish_endpoint)
+			{
+				return build(config, publish_endpoint);
+			};
 		}
 
-		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build(receive_endpoint_configurator configuration)
+		std::shared_ptr<receive_endpoint> receive_endpoint_configurator::build(receive_endpoint_configurator configuration, std::shared_ptr<i_publish_endpoint> const& publish_endpoint)
 		{
-			return std::make_shared<receive_endpoint>(configuration.queue_, configuration.create_consumers());
+			return std::make_shared<receive_endpoint>(configuration.queue_, configuration.create_consumers(), publish_endpoint);
 		}
 	}
 }

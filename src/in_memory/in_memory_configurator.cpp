@@ -15,7 +15,7 @@ namespace masstransit_cpp
 			return *this;
 		}
 
-		auto inserted = receive_endpoints_.insert({ key, { queue_name } });
+		auto inserted = receive_endpoints_.insert({ key, receive_endpoint_configurator{ queue_name } });
 		if (inserted.second)
 		{
 			configure(inserted.first->second);
@@ -32,6 +32,6 @@ namespace masstransit_cpp
 			receivers_factories.push_back(receive_factory.second.get_factory());
 		}
 
-		return std::make_shared<in_memory_bus>(receivers_factories);
+		return std::shared_ptr<in_memory_bus>(new in_memory_bus(receivers_factories));
 	}
 }

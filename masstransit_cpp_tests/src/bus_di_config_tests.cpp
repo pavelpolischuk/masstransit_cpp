@@ -15,7 +15,7 @@ namespace di = boost::di;
 namespace boost {
 	namespace di {
 		template <>
-		struct ctor_traits<masstransit_cpp_tests::message_consumer_depend> {
+		struct ctor_traits<masstransit_cpp_tests::bus_dependent_message_consumer> {
 			BOOST_DI_INJECT_TRAITS(std::shared_ptr<mtc::i_publish_endpoint> const&);
 		};
 	}
@@ -23,8 +23,8 @@ namespace boost {
 
 namespace masstransit_cpp_tests
 {
-	template<class injector_t>
-	std::shared_ptr<mtc::bus> get_bus(injector_t const& injector)
+	template<class InjectorT>
+	std::shared_ptr<mtc::bus> get_bus(InjectorT const& injector)
 	{
 		// singleton
 		static auto bus = mtc::bus_factory::create_using_rabbit_mq([&injector](mtc::rabbit_mq_configurator & bus_configurator)
@@ -47,28 +47,48 @@ namespace masstransit_cpp_tests
 
 		return bus;
 	}
-
 	
-
-	TEST_CASE("di_config_bus_then_send_message_and_receive_tests", "[bus_config_2]")
+	TEST_CASE("di_config_bus_then_send_2_message_using_deps_and_receive_tests", "[bus_config_2]")
 	{
 		auto container = di::make_injector(
 			di::bind<mtc::i_publish_endpoint>().to([](auto const& injector) -> std::shared_ptr<mtc::i_publish_endpoint> { return get_bus(injector); }),
 			di::bind<mtc::bus>().to([](auto const& injector) { return get_bus(injector); }),
-			di::bind<mtc::message_consumer<message_mock>, message_consumer_depend>().to<message_consumer_depend>()
+			di::bind<mtc::message_consumer<message_mock>, bus_dependent_message_consumer>().to<bus_dependent_message_consumer>()
 		);
 
 		auto bus = container.create<std::shared_ptr<mtc::bus>>();
-		auto consumer = container.create<std::shared_ptr<message_consumer_depend>>();
+		auto consumer = container.create<std::shared_ptr<bus_dependent_message_consumer>>();
 
 		bus->start();
 		
-		auto published = bus->publish(message_mock(42)).get();
+		auto published = bus->publish(message_mock(bus_dependent_message_consumer::PUBLISH_WITH_BUS_DEPS)).get();
 		consumer->wait();
 		
 		bus->stop();
 
 		REQUIRE(published);
-		REQUIRE(consumer->saved_value.get_value_or(0) == 43);
+		REQUIRE(consumer->saved_value.get_value_or(0) == (bus_dependent_message_consumer::PUBLISH_WITH_BUS_DEPS + 1));
+	}
+
+	TEST_CASE("di_config_bus_then_send_2_message_using_context_and_receive_tests", "[bus_config_2]")
+	{
+		auto container = di::make_injector(
+			di::bind<mtc::i_publish_endpoint>().to([](auto const& injector) -> std::shared_ptr<mtc::i_publish_endpoint> { return get_bus(injector); }),
+			di::bind<mtc::bus>().to([](auto const& injector) { return get_bus(injector); }),
+			di::bind<mtc::message_consumer<message_mock>, bus_dependent_message_consumer>().to<bus_dependent_message_consumer>()
+		);
+
+		auto bus = container.create<std::shared_ptr<mtc::bus>>();
+		auto consumer = container.create<std::shared_ptr<bus_dependent_message_consumer>>();
+
+		bus->start();
+		
+		auto published = bus->publish(message_mock(bus_dependent_message_consumer::PUBLISH_WITH_CONTEXT)).get();
+		consumer->wait();
+		
+		bus->stop();
+
+		REQUIRE(published);
+		REQUIRE(consumer->saved_value.get_value_or(0) == (bus_dependent_message_consumer::PUBLISH_WITH_CONTEXT + 1));
 	}
 }

@@ -22,7 +22,7 @@ namespace masstransit_cpp
 
 	rabbit_mq_configurator& rabbit_mq_configurator::receive_endpoint(amqp_host const& host, std::string const& queue_name, std::function<void(receive_endpoint_configurator&)> const& configure)
 	{
-		auto key = host.host + queue_name;
+		const auto key = host.host + queue_name;
 		auto q = receive_endpoints_.find(key);
 		if (q != receive_endpoints_.end())
 		{
@@ -30,7 +30,7 @@ namespace masstransit_cpp
 			return *this;
 		}
 
-		auto inserted = receive_endpoints_.insert({ key, { host, queue_name } });
+		auto inserted = receive_endpoints_.insert({ key, receive_endpoint_configurator{ host, queue_name } });
 		if (inserted.second)
 		{
 			configure(inserted.first->second);
@@ -45,7 +45,7 @@ namespace masstransit_cpp
 		return *this;
 	}
 
-	rabbit_mq_configurator& rabbit_mq_configurator::auto_delete(bool is)
+	rabbit_mq_configurator& rabbit_mq_configurator::auto_delete(const bool is)
 	{
 		auto_delete_ = is;
 		return *this;
@@ -59,7 +59,7 @@ namespace masstransit_cpp
 			receivers_factories.push_back(receive_factory.second.get_factory());
 		}
 
-		auto exchanges = std::make_shared<exchange_manager>(auto_delete_);
-		return std::make_shared<rabbit_mq_bus>(host_, client_info_, exchanges, receivers_factories);
+		const auto exchanges = std::make_shared<exchange_manager>(auto_delete_);
+		return std::shared_ptr<rabbit_mq_bus>(new rabbit_mq_bus(host_, client_info_, exchanges, receivers_factories));
 	}
 }

@@ -15,7 +15,8 @@ namespace masstransit_cpp
 		: exchange_manager_(exchange_manager)
 		, receivers_factories_(receivers_factories)
 		, target_host_(target_host)
-		, client_info_(client_info)
+		, host_info_(client_info)
+		, message_publisher_{}
 	{
 		queue_channel_ = target_host_.create_channel();
 	}
@@ -26,9 +27,10 @@ namespace masstransit_cpp
 
 	void rabbit_mq_bus::start()
 	{
+		const auto this_ptr = shared_from_this();
 		for (auto const& b : receivers_factories_)
 		{
-			auto receiver = b();
+			auto receiver = b(this_ptr, host_info_);
 			receiver->bind_queues(exchange_manager_);
 			receivers_.push_back(receiver);
 		}
@@ -52,39 +54,18 @@ namespace masstransit_cpp
 		receivers_.clear();
 	}
 
-	std::future<bool> rabbit_mq_bus::publish_impl(consume_context_info const& m, std::string const& t) const
+	std::future<bool> rabbit_mq_bus::publish(consume_context_info const& m, std::string const& e) const
 	{
-		return publish_worker_->enqueue([this](consume_context_info const& message, std::string const& type) -> bool {
-			auto for_send = message;
-			for_send.send_host = client_info_;
-			if (!exchange_manager_->has_exchange(type))
-			{
-				exchange_manager_->declare_message_type(type, queue_channel_);
-			}
+		return publish_worker_->enqueue([this](consume_context_info const& message, std::string const& exchange) -> bool
+		{
+			exchange_manager_->declare_exchange(exchange, queue_channel_);
+			return message_publisher_.publish(message, queue_channel_, exchange);
+		}, m, e);
+	}
 
-			nlohmann::json json(for_send);
-			auto body = json.dump(2);
-
-			try
-			{
-				BOOST_LOG_TRIVIAL(debug) << "bus publish message:\n" << body;
-
-				queue_channel_->BasicPublish(type, "", AmqpClient::BasicMessage::Create(body));
-
-				BOOST_LOG_TRIVIAL(debug) << "[DONE]";
-				return true;
-			}
-			catch (std::exception & ex)
-			{
-				BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: " << ex.what() << "\n\tBody: " << body;
-				return false;
-			}
-			catch (...)
-			{
-				BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: unknown" << "\n\tBody: " << body;
-				return false;
-			}
-		}, m, t);
+	void rabbit_mq_bus::fill(consume_context_info & message, std::string const& exchange) const
+	{
+		message.send_host = host_info_;
 	}
 
 	bool rabbit_mq_bus::process_input_messages()

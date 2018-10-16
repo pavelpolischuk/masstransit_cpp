@@ -13,10 +13,10 @@ namespace masstransit_cpp
 		public:
 			template<
 				class F, class... Args, 
-				class D_Rep, class D_Period,
+				class DRep, class DPeriod,
 				class = typename std::enable_if<
 					std::is_same<typename std::result_of<F(Args...)>::type, bool>::value>::type>
-			task_repeat(std::chrono::duration<D_Rep, D_Period> const& wait_interval, F&& f, Args&&... args)
+			task_repeat(std::chrono::duration<DRep, DPeriod> const& wait_interval, F&& f, Args&&... args)
 			{
 				auto task = std::bind<bool>(std::forward<F>(f), std::forward<Args>(args)...);
 				future_ = std::async(std::launch::async,
