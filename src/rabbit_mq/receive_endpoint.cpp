@@ -2,6 +2,7 @@
 #include "masstransit_cpp/rabbit_mq/exchange_manager.hpp"
 #include "masstransit_cpp/datetime.hpp"
 
+#include <stdexcept>
 #include <boost/log/trivial.hpp>
 #include <SimpleAmqpClient/SimpleAmqpClient.h>
 
@@ -55,7 +56,7 @@ namespace masstransit_cpp
 			}
 			catch (...)
 			{
-				on_error(context, consumer->message_type(), body, std::exception("unknown"));
+				on_error(context, consumer->message_type(), body, std::runtime_error("unknown"));
 			}
 
 			channel_->BasicAck(envelope);
