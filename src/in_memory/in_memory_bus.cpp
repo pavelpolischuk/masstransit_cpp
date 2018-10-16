@@ -15,9 +15,10 @@ namespace masstransit_cpp
 
 	void in_memory_bus::start()
 	{
+		const auto this_ptr = shared_from_this();
 		for (auto const& factory : receivers_factories_)
 		{
-			receivers_.push_back(factory());
+			receivers_.push_back(factory(this_ptr));
 		}
 
 		publish_worker_ = std::make_shared<threads::worker_thread>();
@@ -36,9 +37,9 @@ namespace masstransit_cpp
 		receivers_.clear();
 	}
 
-	std::future<bool> in_memory_bus::publish_impl(consume_context_info const& m, std::string const& t) const
+	std::future<bool> in_memory_bus::publish(consume_context_info const& m, std::string const& _) const
 	{
-		return publish_worker_->enqueue([this](consume_context_info const& message, std::string const& type) -> bool {
+		return publish_worker_->enqueue([this](consume_context_info const& message) -> bool {
 			auto body = nlohmann::json(message).dump(2);
 			try
 			{
@@ -60,6 +61,6 @@ namespace masstransit_cpp
 				BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: unknown";
 				return false;
 			}
-		}, m, t);
+		}, m);
 	}
 }

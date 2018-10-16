@@ -1,8 +1,7 @@
 #pragma once
 
 #include <masstransit_cpp/global.hpp>
-#include <masstransit_cpp/consume_context.hpp>
-#include <masstransit_cpp/json.hpp>
+#include <masstransit_cpp/consume_context_info.hpp>
 
 #include <future>
 
@@ -13,14 +12,17 @@ namespace masstransit_cpp
 	public:
 		virtual ~i_publish_endpoint() = default;
 
-		template<typename message_t>
-		std::future<bool> publish(message_t const& message) const
+		template<typename MessageT>
+		std::future<bool> publish(MessageT const& message) const
 		{
 			consume_context_info info = consume_context_info::create(message);
-			return publish_impl(info, message_t::message_type());
+			fill(info, MessageT::message_type());
+			return publish(info, MessageT::message_type());
 		}
 
+		virtual std::future<bool> publish(consume_context_info const& message, std::string const& exchange) const = 0;
+
 	protected:
-		virtual std::future<bool> publish_impl(consume_context_info const& message, std::string const& type) const = 0;
+		virtual void fill(consume_context_info & message, std::string const& exchange) const {}
 	};
 }

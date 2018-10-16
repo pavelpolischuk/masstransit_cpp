@@ -4,27 +4,31 @@
 
 namespace masstransit_cpp_tests
 {
-	message_consumer_depend::message_consumer_depend(std::shared_ptr<i_publish_endpoint> const& bus)
+	bus_dependent_message_consumer::bus_dependent_message_consumer(std::shared_ptr<i_publish_endpoint> const& bus)
 		: bus_(bus)
 	{}
 
-	void message_consumer_depend::consume(consume_context<message_mock> const& context)
+	void bus_dependent_message_consumer::consume(consume_context<message_mock> const& context)
 	{
-		if (context.message.id == 42)
+		switch (context.message.id)
 		{
-			bus_->publish(message_mock(43));
+		case PUBLISH_WITH_BUS_DEPS:
+			bus_->publish(message_mock(PUBLISH_WITH_BUS_DEPS+1));
 			return;
-		}
-
+		case PUBLISH_WITH_CONTEXT:
+			context.publish(message_mock(PUBLISH_WITH_CONTEXT + 1));
+			return;
+		default:
 		{
 			std::unique_lock<std::mutex> lock(mutex_);
 			saved_value = context.message.id;
 		}
 
-		condition_.notify_all();
+			condition_.notify_all();
+		}
 	}
 
-	void message_consumer_depend::wait()
+	void bus_dependent_message_consumer::wait()
 	{
 		std::unique_lock<std::mutex> lock(mutex_);
 		condition_.wait_for(lock, std::chrono::seconds(2), [this] { return saved_value != boost::none; });

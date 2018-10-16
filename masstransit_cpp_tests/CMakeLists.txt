@@ -33,6 +33,8 @@ add_executable(masstransit_tests
 
 target_link_libraries(masstransit_tests masstransit_cpp)
 
+source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
+
 install(TARGETS masstransit_tests
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib

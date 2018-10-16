@@ -6,10 +6,11 @@
 
 namespace masstransit_cpp
 {
-	class MASSTRANSIT_CPP_API in_memory_bus : public bus
+	class bus_factory;
+
+	class MASSTRANSIT_CPP_API in_memory_bus : public bus, public std::enable_shared_from_this<in_memory_bus>
 	{
 	public:
-		in_memory_bus(std::vector<in_memory::receive_endpoint::factory> const& receivers_factories);
 		~in_memory_bus() override;
 
 		void start() override;
@@ -17,8 +18,12 @@ namespace masstransit_cpp
 		void stop() override;
 		
 	protected:
-		std::future<bool> publish_impl(consume_context_info const& message, std::string const& type) const override;
+		explicit in_memory_bus(std::vector<in_memory::receive_endpoint::factory> const& receivers_factories);
+	
+		std::future<bool> publish(consume_context_info const& message, std::string const& type) const override;
 
+	friend class in_memory_configurator;
+	
 	private:
 		const std::vector<in_memory::receive_endpoint::factory> receivers_factories_;
 		std::vector<std::shared_ptr<in_memory::receive_endpoint>> receivers_;

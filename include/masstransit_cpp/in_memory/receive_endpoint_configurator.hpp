@@ -24,7 +24,7 @@ namespace masstransit_cpp
 		private:
 			size_t transport_concurrency_limit_{ 1 };
 
-			static std::shared_ptr<receive_endpoint> build(receive_endpoint_configurator configuration);
+			static std::shared_ptr<receive_endpoint> build(receive_endpoint_configurator configuration, std::shared_ptr<i_publish_endpoint> const& publish_endpoint);
 		};
 	}
 }

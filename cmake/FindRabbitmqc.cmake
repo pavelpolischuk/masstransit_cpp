@@ -8,7 +8,7 @@ FIND_PATH(Rabbitmqc_INCLUDE_DIR
 	)
 
 FIND_LIBRARY(Rabbitmqc_LIBRARY
-	NAMES rabbitmq
+	NAMES rabbitmq rabbitmq.4
     HINTS ${Rabbitmqc_DIR}/lib
 	)
 
