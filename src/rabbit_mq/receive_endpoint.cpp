@@ -55,7 +55,7 @@ namespace masstransit_cpp
 			}
 			catch (...)
 			{
-				on_error(context, consumer->message_type(), body, std::exception{ "unknown" });
+				on_error(context, consumer->message_type(), body, std::exception("unknown"));
 			}
 
 			channel_->BasicAck(envelope);
