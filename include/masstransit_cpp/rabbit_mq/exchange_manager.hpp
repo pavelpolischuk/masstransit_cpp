@@ -16,10 +16,10 @@ namespace masstransit_cpp
 		public:
 			exchange_manager(bool auto_delete);
 
-			bool has_exchange(std::string const& type) const;
+			bool has_exchange(std::string const& name) const;
 
-			void declare_message_type(std::string const& type, boost::shared_ptr<AmqpClient::Channel> const& channel);
-
+			void declare_exchange(std::string const& name, boost::shared_ptr<AmqpClient::Channel> const& channel);
+			
 			std::set<std::string> const& all() const { return exchanges_; }
 
 		protected:

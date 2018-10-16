@@ -5,11 +5,11 @@
 
 namespace masstransit_cpp
 {
-	template<class message_t>
+	template<class MessageT>
 	class MASSTRANSIT_CPP_API message_consumer : public i_message_consumer
 	{
 	public:
-		using type_message = message_t;
+		using type_message = MessageT;
 
 		message_consumer() {}
 		virtual ~message_consumer() = default;
@@ -19,9 +19,9 @@ namespace masstransit_cpp
 			return type_message::message_type();
 		}
 
-		void consume(consume_context_info const& context) override
+		void consume(consume_context_info const& context, std::shared_ptr<i_publish_endpoint> const& publish_endpoint) override
 		{
-			consume(consume_context<type_message>(context));
+			consume(consume_context<type_message>(context, publish_endpoint));
 		}
 
 		virtual void consume(consume_context<type_message> const& context) = 0;

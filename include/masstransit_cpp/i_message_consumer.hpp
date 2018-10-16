@@ -10,7 +10,7 @@ namespace masstransit_cpp
 	public:
 		virtual ~i_message_consumer() = default;
 
-		virtual void consume(consume_context_info const& context) = 0;
+		virtual void consume(consume_context_info const& context, std::shared_ptr<i_publish_endpoint> const& publish_endpoint) = 0;
 		
 		virtual std::string message_type() const = 0;
 	};

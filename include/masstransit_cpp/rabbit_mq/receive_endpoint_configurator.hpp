@@ -1,7 +1,6 @@
 #pragma once
 
 #include <masstransit_cpp/global.hpp>
-#include <masstransit_cpp/message_consumer.hpp>
 #include <masstransit_cpp/i_receive_endpoint_configurator.hpp>
 #include <masstransit_cpp/rabbit_mq/amqp_host.hpp>
 #include <masstransit_cpp/rabbit_mq/receive_endpoint.hpp>
@@ -32,7 +31,7 @@ namespace masstransit_cpp
 
 			amqp_host host_;
 
-			static std::shared_ptr<receive_endpoint> build(receive_endpoint_configurator configuration);
+			static std::shared_ptr<receive_endpoint> build(receive_endpoint_configurator configuration, std::shared_ptr<i_publish_endpoint> const& publish_endpoint, host_info const& client_host);
 		};
 	}
 }
