@@ -3,7 +3,6 @@
 
 language: cpp
 dist: bionic
-sudo: required
 compiler:
   - gcc
 os: 

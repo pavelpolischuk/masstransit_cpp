@@ -1,5 +1,3 @@
-project(tests)
-
 include_directories(${BOOST_DI_DIR}/include)
 include_directories(../include)
 
@@ -39,14 +37,14 @@ set(SOURCE_FILES
 )
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
-add_executable(tests ${SOURCE_FILES})
-target_link_libraries(tests masstransit_cpp)
+add_executable(test ${SOURCE_FILES})
+target_link_libraries(test masstransit_cpp)
 
-add_test(NAME tests COMMAND tests WORKING_DIRECTORY bin)
+add_test(NAME test COMMAND test WORKING_DIRECTORY bin)
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
 
-install(TARGETS tests
+install(TARGETS test
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
