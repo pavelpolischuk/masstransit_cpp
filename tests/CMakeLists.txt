@@ -37,14 +37,14 @@ set(SOURCE_FILES
 )
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
-add_executable(test ${SOURCE_FILES})
-target_link_libraries(test masstransit_cpp)
+add_executable(testing ${SOURCE_FILES})
+target_link_libraries(testing masstransit_cpp)
 
-add_test(NAME test COMMAND test WORKING_DIRECTORY bin)
+add_test(NAME testing COMMAND testing WORKING_DIRECTORY bin)
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
 
-install(TARGETS test
+install(TARGETS testing
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
