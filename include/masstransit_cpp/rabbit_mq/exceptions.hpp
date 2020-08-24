@@ -31,6 +31,7 @@
 #include <masstransit_cpp/global.hpp>
 #include <stdexcept>
 #include <string>
+#include <memory>
 
 struct amqp_rpc_reply_t_;
 struct amqp_channel_close_t_;
