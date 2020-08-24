@@ -36,7 +36,7 @@ set(SOURCE_FILES
 	src/tests/worker_tests.cpp
 )
 
-include_directories("${PROJECT_SOURCE_DIR}/include")
+include_directories("include")
 add_executable(testing ${SOURCE_FILES})
 target_link_libraries(testing masstransit_cpp)
 
