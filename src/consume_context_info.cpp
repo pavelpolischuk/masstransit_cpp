@@ -1,10 +1,31 @@
-#include <masstransit_cpp/consume_context_info.hpp>
-#include <masstransit_cpp/json_adapters.hpp>
+#include "masstransit_cpp/consume_context_info.hpp"
+#include "masstransit_cpp/utils/json_adapters.hpp"
+#include <utility>
 
 namespace masstransit_cpp
 {
 	consume_context_info::consume_context_info()
+		: message_id()
+		, conversation_id()
 	{
+	}
+
+	consume_context_info::consume_context_info(boost::uuids::uuid const& message_id, std::string const& type, nlohmann::json message)
+		: message_id(message_id)
+		, conversation_id(message_id)
+		, message_types({ type })
+		, message(std::move(message))
+	{
+	}
+
+	consume_context_info::consume_context_info(boost::uuids::uuid const& message_id, consume_context_info const& other, std::string const& type, nlohmann::json message)
+		: message_id(message_id)
+		, conversation_id(other.conversation_id)
+		, correlation_id(other.correlation_id)
+		, message_types({ type })
+		, message(std::move(message))
+	{
+		initiator_id = correlation_id ? correlation_id : other.message_id;
 	}
 
 	void to_json(nlohmann::json& j, consume_context_info const& p)
@@ -21,7 +42,11 @@ namespace masstransit_cpp
 
 		if(p.correlation_id)
 		{
-			j["correlationId"] = p.correlation_id.get();
+			j["correlationId"] = p.correlation_id.value();
+		}
+		if(p.initiator_id)
+		{
+			j["initiatorId"] = p.initiator_id.value();
 		}
 	}
 
@@ -40,6 +65,11 @@ namespace masstransit_cpp
 		{
 			p.correlation_id = correlation_id->get<boost::uuids::uuid>();
 		}
+		const auto initiator_id = j.find("initiatorId");
+		if(initiator_id != j.end())
+		{
+			p.initiator_id = initiator_id->get<boost::uuids::uuid>();
+		}
 	}
 
 	bool operator==(consume_context_info const& lhv, consume_context_info const& rhv)
@@ -48,6 +78,7 @@ namespace masstransit_cpp
 			lhv.message_id == rhv.message_id &&
 			lhv.conversation_id == rhv.conversation_id &&
 			lhv.correlation_id == rhv.correlation_id &&
+			lhv.initiator_id == rhv.initiator_id &&
 			lhv.source_address == rhv.source_address &&
 			lhv.destination_address == rhv.destination_address &&
 			lhv.message_types == rhv.message_types &&

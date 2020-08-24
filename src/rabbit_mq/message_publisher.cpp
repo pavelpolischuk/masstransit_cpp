@@ -1,50 +1,51 @@
 #include "masstransit_cpp/rabbit_mq/message_publisher.hpp"
+#include "masstransit_cpp/rabbit_mq/amqp_channel.hpp"
+#include "masstransit_cpp/utils/i_error_handler.hpp"
 
-#include <SimpleAmqpClient/Channel.h>
-#include <boost/log/trivial.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 namespace masstransit_cpp
 {
+	message_publisher::message_publisher(std::shared_ptr<i_error_handler> error_handler)
+		: error_handler_(std::move(error_handler))
+	{
+	}
+
 	bool message_publisher::publish(consume_context_info const& context,
-		boost::shared_ptr<AmqpClient::Channel> const& channel, std::string const& exchange) const
+		std::shared_ptr<rabbit_mq::amqp_channel> const& channel, std::string const& exchange) const
 	{
 		nlohmann::json json(context);
-		auto body = json.dump(2);
+		const auto body = json.dump(2);
 
 		try
 		{
-			BOOST_LOG_TRIVIAL(debug) << "bus publish message:\n" << body;
-
-			auto amqp_message = AmqpClient::BasicMessage::Create(body);
-			amqp_message->MessageId(to_string(context.message_id));
+			auto message = std::make_shared<rabbit_mq::amqp_message>(body);
+			message->set_message_id(to_string(context.message_id));
 
 			if (context.correlation_id)
-				amqp_message->CorrelationId(to_string(context.correlation_id.get()));
+				message->set_correlation_id(to_string(context.correlation_id.value()));
 
-			amqp_message->ContentType("application/vnd.masstransit+json");
+			message->set_content_type("application/vnd.masstransit+json");
 
 			if(!context.headers.empty())
 			{
-				AmqpClient::Table table;
+				rabbit_mq::amqp_table table;
 				for(auto const& it : context.headers)
 					table.insert({ it.first, it.second });
-				amqp_message->HeaderTable(table);
+				message->set_header_table(table);
 			}
 
-			channel->BasicPublish(exchange, "", amqp_message);
-
-			BOOST_LOG_TRIVIAL(debug) << "[DONE]";
+			channel->publish(exchange, "", message);
 			return true;
 		}
 		catch (std::exception & ex)
 		{
-			BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: " << ex.what() << "\n\tBody: " << body;
+			error_handler_->on_error("message_publisher::publish", ex.what());
 			return false;
 		}
 		catch (...)
 		{
-			BOOST_LOG_TRIVIAL(error) << "rabbit_mq_bus::publish_impl\n\tException: unknown" << "\n\tBody: " << body;
+			error_handler_->on_error("message_publisher::publish", "");
 			return false;
 		}
 	}

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <masstransit_cpp/global.hpp>
+#include <masstransit_cpp/bus.hpp>
+
 #include <memory>
 #include <functional>
 
 namespace masstransit_cpp
 {
-	class bus;
 	class in_memory_configurator;
 	class rabbit_mq_configurator;
 

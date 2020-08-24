@@ -1,9 +1,11 @@
 #pragma once
 
 #include <masstransit_cpp/global.hpp>
+
 #include <queue>
 #include <thread>
 #include <future>
+#include <functional>
 #include <type_traits>
 
 namespace masstransit_cpp
@@ -13,6 +15,8 @@ namespace masstransit_cpp
 		class MASSTRANSIT_CPP_API tasks_queue
 		{
 		public:
+			using task_type = std::function<void()>;
+
 			virtual ~tasks_queue() = default;
 
 			template<class F, class... Args>
@@ -35,23 +39,16 @@ namespace masstransit_cpp
 				return res;
 			}
 
-			void stop()
-			{
-				{
-					std::unique_lock<std::mutex> lock(queue_mutex_);
-					stop_ = true;
-				}
+			bool get_task(task_type & task);
 
-				condition_.notify_all();
-			}
+			void stop();
 
 		protected:
-			std::queue<std::function<void()>> tasks_;
-			std::mutex queue_mutex_;
-			std::condition_variable condition_;
-			bool stop_{ false };
+			mutable std::mutex queue_mutex_;
+			mutable std::condition_variable condition_;
 
-			friend class worker;
+			std::queue<task_type> tasks_;
+			bool stop_{ false };
 		};
 	}
 }

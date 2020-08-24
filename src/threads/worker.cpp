@@ -1,44 +1,60 @@
 #include "masstransit_cpp/threads/worker.hpp"
+#include <fstream>
 
 namespace masstransit_cpp
 {
 	namespace threads
 	{
-		worker::worker(tasks_queue & queue)
-			: future_(std::async(std::launch::async, [this, &queue]()
+		worker::worker(std::function<void(std::shared_ptr<worker> const&)> const& on_task_completed)
+			: future_(std::async(std::launch::async, [this]()
+			{
+				while (!stop_)
 				{
-					while (true)
+					task_type task;
+					
 					{
-						std::function<void()> task;
-
-						{
-							std::unique_lock<std::mutex> lock(queue.queue_mutex_);
-							queue.condition_.wait(lock, [this, &queue]
-							{
-								return queue.stop_ || !queue.tasks_.empty(); 
-							});
+						std::unique_lock<std::mutex> lock(queue_mutex_);
+						condition_.wait(lock, [this] { return stop_ || task_.has_value(); });
+					
+						if (stop_ && !task_.has_value())
+							return;
 						
-							if (queue.stop_ && queue.tasks_.empty())
-								return;
-
-							task = std::move(queue.tasks_.front());
-							queue.tasks_.pop();
-						}
-
-						task();
+						std::swap(task, *task_);
+						task_.reset();
 					}
-				}))
+
+					task();
+					on_task_completed_(shared_from_this());
+				}
+			}))
 		{
+			on_task_completed_.connect(on_task_completed);
 		}
 
 		worker::~worker()
 		{
-			if (future_.valid()) future_.wait();
+			stop();
+			attach();
 		}
 
 		void worker::attach() const
 		{
 			if (future_.valid()) future_.wait();
+		}
+
+		void worker::stop()
+		{
+			{
+				std::unique_lock<std::mutex> lock(queue_mutex_);
+				stop_ = true;
+			}
+
+			condition_.notify_all();
+		}
+
+		bool worker::ready() const
+		{
+			return !stop_ && !task_.has_value() && future_.valid();
 		}
 	}
 }

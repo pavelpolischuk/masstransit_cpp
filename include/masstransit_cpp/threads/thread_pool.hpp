@@ -1,6 +1,6 @@
 #pragma once
 
-#include <masstransit_cpp/threads/worker.hpp>
+#include <masstransit_cpp/threads/queue_worker.hpp>
 
 #include <list>
 
@@ -16,7 +16,7 @@ namespace masstransit_cpp
 			virtual ~thread_pool();
 
 		private:
-			std::list<worker> workers_;
+			std::list<queue_worker> workers_;
 		};
 	}
 }

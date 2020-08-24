@@ -2,41 +2,36 @@
 # see travis-ci.org for details
 
 language: cpp
-
-dist: trusty
-sudo: true
-
+dist: bionic
 compiler:
   - gcc
-
+os: 
+  - linux
+  
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-6
+      - g++-8
 
 services: rabbitmq
    
 install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libboost1.55-dev libboost-chrono1.55-dev libboost-date-time1.55-dev libboost-filesystem1.55-dev libboost-log1.55-dev libboost-system1.55-dev libboost-thread1.55-dev
-  - CXX=/usr/bin/g++-6 CC=/usr/bin/gcc-6
+  - sudo apt-get install -y libboost1.65-dev
+  - CXX=/usr/bin/g++-8 CC=/usr/bin/gcc-8
+  - export BUILD_TYPE=Release
+  - export RABBITMQC_SSL=ON
   - export INSTALL_PREFIX=`pwd`/_install
   - mkdir -p _prereqs
-  - export RABBITMQC_SSL=ON
   - pushd _prereqs
   - git clone --single-branch https://github.com/boost-experimental/di.git
   - export BOOST_DI_DIR=`pwd`/di
   - git clone https://github.com/alanxz/rabbitmq-c.git
   - cd rabbitmq-c
   - git checkout v0.8.0
-  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_TOOLS=OFF -DENABLE_SSL_SUPPORT=${RABBITMQC_SSL} .
-  - cmake --build . --target install
-  - cd ..
-  - git clone --single-branch https://github.com/alanxz/SimpleAmqpClient.git
-  - cd SimpleAmqpClient
-  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_TESTS=OFF -DRabbitmqc_DIR=${INSTALL_PREFIX} -DRabbitmqc_SSL_ENABLED=${RABBITMQC_SSL} .
+  - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_TOOLS=OFF -DENABLE_SSL_SUPPORT=${RABBITMQC_SSL} .
   - cmake --build . --target install
   - popd
 
@@ -47,8 +42,8 @@ before_script:
 
 # Run the Build script
 script:
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DSimpleAmqpClient_DIR=${INSTALL_PREFIX} -DBOOST_DI_DIR=${BOOST_DI_DIR} ..
+  - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DRabbitmqc_DIR=${INSTALL_PREFIX} -DBOOST_DI_DIR=${BOOST_DI_DIR} ..
   - cmake --build . --target install
     
 after_script:
-  - LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib ctest -V .
+  - LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib ctest -V -C ${BUILD_TYPE}

@@ -5,7 +5,6 @@
 
 #include <string>
 #include <functional>
-#include <boost/optional.hpp>
 
 namespace masstransit_cpp
 {
@@ -28,6 +27,6 @@ namespace masstransit_cpp
 		std::string username_;
 		std::string password_;
 
-		boost::optional<ssl_config> ssl_;
+		std::optional<ssl_config> ssl_;
 	};
 }
