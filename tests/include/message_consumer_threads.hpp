@@ -14,7 +14,7 @@ namespace masstransit_cpp_tests
 	class message_consumer_threads : public message_consumer<message_mock>
 	{
 	public:
-		static const int NEED_THREAD_COUNT = 3;
+		static const int NEED_THREAD_COUNT;
 
 		message_consumer_threads() = default;
 		~message_consumer_threads() override = default;

@@ -4,6 +4,8 @@
 
 namespace masstransit_cpp_tests
 {
+	const int message_consumer_depend::PUBLISH_WITH_CONTEXT = 242;
+
 	void message_consumer_depend::consume(consume_context<message_mock> const& context)
 	{
 		if (context.message.id == PUBLISH_WITH_CONTEXT)

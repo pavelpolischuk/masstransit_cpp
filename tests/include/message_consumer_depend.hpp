@@ -14,7 +14,7 @@ namespace masstransit_cpp_tests
 	class message_consumer_depend : public message_consumer<message_mock>  // NOLINT(cppcoreguidelines-special-member-functions)
 	{
 	public:
-		static const int PUBLISH_WITH_CONTEXT = 242;
+		static const int PUBLISH_WITH_CONTEXT;
 
 		message_consumer_depend() = default;
 		~message_consumer_depend() override = default;

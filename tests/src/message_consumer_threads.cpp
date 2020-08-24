@@ -2,6 +2,8 @@
 
 namespace masstransit_cpp_tests
 {
+	const int message_consumer_threads::NEED_THREAD_COUNT = 3;
+
 	void message_consumer_threads::consume(consume_context<message_mock> const& context)
 	{
 		auto thread_id = std::this_thread::get_id();
