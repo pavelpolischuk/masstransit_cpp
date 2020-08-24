@@ -20,7 +20,7 @@ services: rabbitmq
    
 install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libboost1.55-dev
+  - sudo apt-get install -y libboost-dev
   - CXX=/usr/bin/g++-8 CC=/usr/bin/gcc-8
   - export BUILD_TYPE=Release
   - export RABBITMQC_SSL=ON
