@@ -4,6 +4,7 @@
 
 #include <future>
 #include <optional>
+#include <functional>
 #include <boost/signals2.hpp>
 
 namespace masstransit_cpp

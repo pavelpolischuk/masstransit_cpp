@@ -2,6 +2,7 @@
 
 #include <masstransit_cpp/global.hpp>
 #include <future>
+#include <functional>
 #include <type_traits>
 
 namespace masstransit_cpp
