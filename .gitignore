@@ -4,6 +4,7 @@ _build/
 _install/
 _prereqs/
 .idea/
+.vscode/
 
 *~
 .*.sw?

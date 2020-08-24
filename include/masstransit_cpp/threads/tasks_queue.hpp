@@ -5,6 +5,7 @@
 #include <queue>
 #include <thread>
 #include <future>
+#include <functional>
 #include <type_traits>
 
 namespace masstransit_cpp
