@@ -2,13 +2,13 @@
 # see travis-ci.org for details
 
 language: cpp
-
 dist: bionic
-sudo: true
-
+sudo: required
 compiler:
   - gcc
-
+os: 
+  - linux
+  
 addons:
   apt:
     sources:
