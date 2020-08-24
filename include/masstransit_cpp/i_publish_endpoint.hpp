@@ -15,14 +15,9 @@ namespace masstransit_cpp
 		template<typename MessageT>
 		std::future<bool> publish(MessageT const& message) const
 		{
-			consume_context_info info = consume_context_info::create(message);
-			fill(info, MessageT::message_type());
-			return publish(info, MessageT::message_type());
+			return publish(consume_context_info::create(message), MessageT::message_type());
 		}
 
-		virtual std::future<bool> publish(consume_context_info const& message, std::string const& exchange) const = 0;
-
-	protected:
-		virtual void fill(consume_context_info & message, std::string const& exchange) const {}
+		virtual std::future<bool> publish(consume_context_info message, std::string const& exchange) const = 0;
 	};
 }

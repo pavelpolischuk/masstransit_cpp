@@ -9,8 +9,6 @@ namespace masstransit_cpp
 {
 	namespace in_memory
 	{
-		class receive_endpoint;
-
 		class MASSTRANSIT_CPP_API receive_endpoint_configurator : public i_receive_endpoint_configurator
 		{
 		public:
@@ -19,12 +17,12 @@ namespace masstransit_cpp
 
 			receive_endpoint_configurator & transport_concurrency_limit(size_t limit);
 
-			receive_endpoint::factory get_factory() const;
+			receive_endpoint::factory get_factory(std::shared_ptr<i_error_handler> const& error_handler) const;
 		
 		private:
 			size_t transport_concurrency_limit_{ 1 };
 
-			static std::shared_ptr<receive_endpoint> build(receive_endpoint_configurator configuration, std::shared_ptr<i_publish_endpoint> const& publish_endpoint);
+			static std::shared_ptr<receive_endpoint> build(receive_endpoint_configurator const& configuration, std::shared_ptr<i_publish_endpoint> const& publish_endpoint, std::shared_ptr<i_error_handler> const& error_handler);
 		};
 	}
 }

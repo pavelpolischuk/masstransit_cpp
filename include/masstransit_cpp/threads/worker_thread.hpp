@@ -1,6 +1,6 @@
 #pragma once
 
-#include <masstransit_cpp/threads/worker.hpp>
+#include <masstransit_cpp/threads/queue_worker.hpp>
 
 namespace masstransit_cpp
 {
@@ -15,7 +15,7 @@ namespace masstransit_cpp
 			void wait() const;
 
 		protected:
-			worker worker_;
+			queue_worker worker_;
 		};
 	}
 }

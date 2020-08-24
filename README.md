@@ -1,6 +1,6 @@
 # Masstransit_cpp [![Build Status](https://travis-ci.org/pavelpolischuk/masstransit_cpp.svg?branch=master)](https://travis-ci.org/pavelpolischuk/masstransit_cpp)
 
-AMQP message publishing and consuming library. Like and a little compatible with [MassTransit for .Net](https://github.com/MassTransit/MassTransit). It's using [SimpleAmqpClient](https://github.com/alanxz/SimpleAmqpClient).
+AMQP message publishing and consuming library. Like and a little compatible with [MassTransit for .Net](https://github.com/MassTransit/MassTransit). It's using [Rabbitmq-c](https://github.com/alanxz/rabbitmq-c).
 
 ### Quick start
 
@@ -9,7 +9,7 @@ AMQP message publishing and consuming library. Like and a little compatible with
 It is necessary to implement default `ctor`, static method `message_type()` and serialize/deserialize methods `to_json`/`from_json`.
 
 ```cpp
-#include <masstransit_cpp/json.hpp>
+#include <masstransit_cpp/utils/json.hpp>
 
 struct my_message {
     int data_1{ -1 };
@@ -20,13 +20,13 @@ struct my_message {
     static std::string message_type() { return "MyMessage"; }
 };
 
-void to_json(nlohmann::json & j, my_message const& p) {
-    j = nlohmann::json{ {"data_1", p.data_1}, {"data_2", p.data_2} };
+void to_json(nlohmann::json & j, my_message const& m) {
+    j = nlohmann::json{ {"data_1", m.data_1}, {"data_2", m.data_2} };
 }
 
-void from_json(nlohmann::json const& j, person & p) {
-    p.data_1 = j.at("data_1").get<int>();
-    p.data_2 = j.at("data_2").get<std::string>();
+void from_json(nlohmann::json const& j, my_message & m) {
+    m.data_1 = j.at("data_1").get<int>();
+    m.data_2 = j.at("data_2").get<std::string>();
 }
 ```
 
@@ -51,17 +51,16 @@ public:
 
 ```cpp
 #include <my_consumer.hpp>
-#include <masstransit_cpp/bus.hpp>
-
-using namespace masstransit_cpp;
+#include <masstransit_cpp/bus_factory.hpp>
+#include <masstransit_cpp/rabbit_mq/rabbit_mq_configurator.hpp>
 
 void main() {
 
-auto one_consumer = std::make_shared<my_consumer>();
-auto bus = masstransit_cpp::bus_factory::create_using_rabbit_mq([=](masstransit_cpp::rabbit_mq_configurator & bus_configurator) {
+    auto one_consumer = std::make_shared<my_message_consumer>();
+    auto bus = masstransit_cpp::bus_factory::create_using_rabbit_mq([=](masstransit_cpp::rabbit_mq_configurator & bus_configurator) {
         auto host = bus_configurator.host("127.0.0.1", [](auto & host_configurator) {
-            host_configurator.username("user");
-            host_configurator.password("password");
+            host_configurator.username("guest");
+            host_configurator.password("guest");
         });
 
         bus_configurator.receive_endpoint(host, "QueueName", [=](masstransit_cpp::rabbit_mq::receive_endpoint_configurator & endpoint_configurator) {
@@ -74,9 +73,9 @@ auto bus = masstransit_cpp::bus_factory::create_using_rabbit_mq([=](masstransit_
         });
     });
 
-    b->start();
+    bus->start();
 //  ... wait ...
-    b->stop();
+    bus->stop();
 }
 ```
 
@@ -102,7 +101,8 @@ If you use dependency injection, your consumers may depend on bus (handle some m
 
 ```cpp
 #include <my_message.hpp>
-#include <masstransit_cpp/bus.hpp>
+#include <masstransit_cpp/bus_factory.hpp>
+#include <masstransit_cpp/rabbit_mq/rabbit_mq_configurator.hpp>
 #include <masstransit_cpp/message_consumer.hpp>
 #include <boost/di.hpp>
 
@@ -115,12 +115,12 @@ struct next_message {
     static std::string message_type() { return "NextMessage"; }
 };
 
-void to_json(nlohmann::json & j, my_message const& p) {
-    j = nlohmann::json{ {"data", p.data} };
+void to_json(nlohmann::json & j, my_message const& m) {
+    j = nlohmann::json{ {"data", m.data} };
 }
 
-void from_json(nlohmann::json const& j, person & p) {
-    p.data = j.at("data").get<int>();
+void from_json(nlohmann::json const& j, my_message & m) {
+    m.data = j.at("data").get<int>();
 }
 
 class dependent_consumer : public masstransit_cpp::message_consumer<my_message> {
@@ -146,9 +146,8 @@ std::shared_ptr<masstransit_cpp::bus> create_bus(injector_t const& injector) {  
 
         bus_configurator.receive_endpoint(host, "QueueName", 
                 [&injector](masstransit_cpp::rabbit_mq::receive_endpoint_configurator & endpoint_configurator) {
-                                                                                // load consumer for my_message from injector,
-                    endpoint_configurator.load_from<my_message>(injector);      // i.e. impl of masstransit_cpp::message_consumer<my_message>
-                });                                                             
+                    endpoint_configurator.load_from<my_message>(injector);      // load consumer for my_message from injector,
+                });                                                             // i.e. impl of masstransit_cpp::message_consumer<my_message>
     });
 	
     return bus;

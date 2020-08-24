@@ -3,13 +3,15 @@
 #include "masstransit_cpp/rabbit_mq/rabbit_mq_bus.hpp"
 #include "masstransit_cpp/rabbit_mq/exchange_manager.hpp"
 #include "masstransit_cpp/rabbit_mq/receive_endpoint.hpp"
+#include "masstransit_cpp/utils/i_error_handler.hpp"
 
 namespace masstransit_cpp
 {
 	using namespace rabbit_mq;
 
 	rabbit_mq_configurator::rabbit_mq_configurator()
-		: host_(amqp_host::localhost)
+		: error_handler_(new i_error_handler)
+		, host_(amqp_host::LOCALHOST)
 	{
 	}
 
@@ -51,15 +53,33 @@ namespace masstransit_cpp
 		return *this;
 	}
 
+	rabbit_mq_configurator& rabbit_mq_configurator::error_handler(std::shared_ptr<i_error_handler> const& handler)
+	{
+		if (handler)
+			error_handler_ = handler;
+		else
+			error_handler_ = std::make_shared<i_error_handler>();
+		return *this;
+	}
+
 	std::shared_ptr<bus> rabbit_mq_configurator::build() const
 	{
 		std::vector<receive_endpoint::factory> receivers_factories;
 		for(auto & receive_factory : receive_endpoints_)
 		{
-			receivers_factories.push_back(receive_factory.second.get_factory());
+			receivers_factories.push_back(receive_factory.second.get_factory(error_handler_));
 		}
 
-		const auto exchanges = std::make_shared<exchange_manager>(auto_delete_);
-		return std::shared_ptr<rabbit_mq_bus>(new rabbit_mq_bus(host_, client_info_, exchanges, receivers_factories));
+		const auto exchanges = std::make_shared<exchange_manager>(auto_delete_, error_handler_);
+		const auto publisher = std::make_shared<message_publisher>(error_handler_);
+		return std::shared_ptr<rabbit_mq_bus>(new rabbit_mq_bus(
+			rabbit_mq_config 
+			{ 
+				host_, 
+				client_info_
+			}, 
+			exchanges, 
+			publisher,
+			receivers_factories));
 	}
 }

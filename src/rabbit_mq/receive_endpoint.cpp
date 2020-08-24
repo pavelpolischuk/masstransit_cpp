@@ -1,123 +1,124 @@
 #include "masstransit_cpp/rabbit_mq/receive_endpoint.hpp"
 #include "masstransit_cpp/rabbit_mq/exchange_manager.hpp"
-#include "masstransit_cpp/datetime.hpp"
-
-#include <stdexcept>
-#include <boost/log/trivial.hpp>
-#include <SimpleAmqpClient/SimpleAmqpClient.h>
+#include "masstransit_cpp/rabbit_mq/amqp_channel.hpp"
+#include "masstransit_cpp/utils/datetime.hpp"
 
 namespace masstransit_cpp
 {
 	namespace rabbit_mq
 	{
-		receive_endpoint::receive_endpoint(boost::shared_ptr<AmqpClient::Channel> const& channel, 
-			std::string const& queue, host_info const& host,
-		    const uint16_t prefetch_count, boost::posix_time::time_duration const& timeout,
-			consumers_map const& consumers_by_type,
-			std::shared_ptr<i_publish_endpoint> const& publish_endpoint)
-			: i_receive_endpoint(consumers_by_type, publish_endpoint)
-			, queue_(queue)
-			, host_(host)
-			, prefetch_count_(prefetch_count)
-			, timeout_ms_(get_ms(timeout))
+		receive_endpoint::receive_endpoint(std::shared_ptr<amqp_channel> const& channel, 
+			receive_endpoint_config const& config, consumers_map const& consumers_by_type,
+			std::shared_ptr<i_publish_endpoint> const& publish_endpoint,
+			std::shared_ptr<i_error_handler> const& error_handler)
+			: i_receive_endpoint(consumers_by_type, publish_endpoint, error_handler)
+			, config_(config)
+			, worker_pool_(new threads::worker_pool(config.concurrency_limit))
 			, channel_(channel)
 		{
 		}
 
+		receive_endpoint::~receive_endpoint()
+		{
+			stop();
+		}
+
+		void receive_endpoint::start_listen()
+		{
+			receiving_loop_ = std::make_shared<threads::task_repeat>(
+				std::chrono::seconds(1),
+				&receive_endpoint::try_consume, this);	
+		}
+
 		bool receive_endpoint::try_consume() const
 		{
-			AmqpClient::Envelope::ptr_t envelope;
-			if (!channel_->BasicConsumeMessage(tag_, envelope, timeout_ms_))
+			const auto worker = worker_pool_->get_free_worker();
+			if(worker == nullptr) return false;
+
+			std::shared_ptr<amqp_envelope> envelope;
+			if (!channel_->consume_message(tag_, envelope, config_.timeout))
+			{
+				worker_pool_->return_worker(worker);
 				return false;
+			}
 
 			if (envelope == nullptr)
+			{
+				worker_pool_->return_worker(worker);
 				return false;
+			}
 
-			const auto message = envelope->Message();
-			auto body = message->Body();
+			const auto message = envelope->message();
+			auto body = message->body();
 			auto body_j = nlohmann::json::parse(body.begin(), body.end());
+			
+			channel_->ack(envelope->get_delivery_info());
+
 			const auto context = body_j.get<consume_context_info>();
-
-			auto consumer = find_consumer(context.message_types);
-			if (consumer == nullptr)
-				return true;
-
-			try
+			worker->enqueue([this, context]()
 			{
-				BOOST_LOG_TRIVIAL(debug) << "bus consumed message:\n" << body;
+				deliver_impl(context);
+			});
 
-				consumer->consume(context, publish_endpoint_);
-
-				BOOST_LOG_TRIVIAL(debug) << "[DONE]";
-			}
-			catch (std::exception & ex)
-			{
-				on_error(context, consumer->message_type(), body, ex);
-			}
-			catch (...)
-			{
-				on_error(context, consumer->message_type(), body, std::runtime_error("unknown"));
-			}
-
-			channel_->BasicAck(envelope);
 			return true;
 		}
 
-		void receive_endpoint::bind_queues(std::shared_ptr<exchange_manager> const& exchanges)
+		void receive_endpoint::bind_queues(std::shared_ptr<exchange_manager> const& exchange_manager)
 		{
-			const auto error_queue = get_error_queue(queue_);
+			const auto error_queue = get_error_queue(config_.queue);
 
-			exchanges->declare_exchange(queue_, channel_);
-			exchanges->declare_exchange(error_queue, channel_);
+			exchange_manager->declare_exchange(config_.queue, channel_);
+			exchange_manager->declare_exchange(error_queue, channel_);
 			
 			for (auto const& c : consumers_by_type_)
 			{
-				const auto type = c.second->message_type();
-				exchanges->declare_exchange(type, channel_);
-				channel_->BindExchange(queue_, type, "");
+				const auto type = exchange_manager->get_name_by_message_type(c.second->message_type());
+				exchange_manager->declare_exchange(type, channel_);
+				channel_->bind_exchange(config_.queue, type, "");
 			}
 
-			channel_->BindQueue(error_queue, error_queue);
-			channel_->BindQueue(queue_, queue_);
+			channel_->bind_queue(error_queue, error_queue);
+			channel_->bind_queue(config_.queue, config_.queue);
 
-			tag_ = channel_->BasicConsume(queue_, "", true, false, true, prefetch_count_);
+			tag_ = channel_->consume(config_.queue, "", true, false, config_.exclusive, config_.prefetch_count);
 		}
 
-		int receive_endpoint::get_ms(boost::posix_time::time_duration const& timeout)
+		void receive_endpoint::on_error(consume_context_info const& context, std::string const& consumer_type, std::exception const& ex) const
 		{
-			const auto ms = timeout.total_milliseconds();
-			if (ms <= static_cast<int64_t>(std::numeric_limits<int>::max()))
-				return static_cast<int>(ms);
+			i_receive_endpoint::on_error(context, consumer_type, ex);
+
+			auto new_context = context;  // NOLINT(performance-unnecessary-copy-initialization)
+			new_context.headers.emplace("MT-Fault-Message", std::string(ex.what()));
+			new_context.headers.emplace("MT-Fault-Timestamp", datetime::now().to_string());
+			new_context.headers.emplace("MT-Reason", "fault");
 			
-			BOOST_LOG_TRIVIAL(warning) << "receive_endpoint::ctor: ms count is greater numeric_limits<int>::max";
-			return 500;
-		}
+			new_context.headers.emplace("MT-Host-MachineName", config_.host.machine_name);
+			new_context.headers.emplace("MT-Host-ProcessName", config_.host.process_name);
+			new_context.headers.emplace("MT-Host-ProcessId", std::to_string(config_.host.process_id));
+			new_context.headers.emplace("MT-Host-Assembly", config_.host.assembly);
+			new_context.headers.emplace("MT-Host-AssemblyVersion", config_.host.assembly_version);
+			new_context.headers.emplace("MT-Host-MassTransitVersion", config_.host.masstransit_version);
+			new_context.headers.emplace("MT-Host-FrameworkVersion", config_.host.framework_version);
+			new_context.headers.emplace("MT-Host-OperatingSystemVersion", config_.host.operating_system_version);
 
-		void receive_endpoint::on_error(consume_context_info context, std::string const& consumer_type, 
-			std::string const& message, std::exception const& ex) const
-		{
-			BOOST_LOG_TRIVIAL(error) << "when bus consumer[" << consumer_type << "] try handle message:\n"
-				<< message << "\n\tException: " << ex.what();
-
-			context.headers.emplace("MT-Fault-Message", std::string(ex.what()));
-			context.headers.emplace("MT-Fault-Timestamp", to_string(datetime::now()));
-			context.headers.emplace("MT-Reason", "fault");
-
-			context.headers.emplace("MT-Host-MachineName", host_.machine_name);
-			context.headers.emplace("MT-Host-ProcessName", host_.process_name);
-			context.headers.emplace("MT-Host-ProcessId", std::to_string(host_.process_id));
-			context.headers.emplace("MT-Host-Assembly", host_.assembly);
-			context.headers.emplace("MT-Host-AssemblyVersion", host_.assembly_version);
-			context.headers.emplace("MT-Host-MassTransitVersion", host_.masstransit_version);
-			context.headers.emplace("MT-Host-FrameworkVersion", host_.framework_version);
-			context.headers.emplace("MT-Host-OperatingSystemVersion", host_.operating_system_version);
-
-			publish_endpoint_->publish(context, get_error_queue(queue_));
+			publish_endpoint_->publish(new_context, get_error_queue(config_.queue));
 		}
 
 		std::string receive_endpoint::get_error_queue(std::string const& queue)
 		{
 			return queue + "_error";
+		}
+
+		void receive_endpoint::wait() const
+		{
+			const auto loop = receiving_loop_;
+			if(loop != nullptr)
+				loop->wait();
+		}
+
+		void receive_endpoint::stop()
+		{
+			receiving_loop_.reset();
 		}
 	}
 }

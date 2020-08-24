@@ -12,36 +12,38 @@ namespace masstransit_cpp
 		
 		virtual ~i_receive_endpoint_configurator() = default;
 
-		template<class message_t>
-		i_receive_endpoint_configurator & consumer(std::function<std::shared_ptr<message_consumer<message_t>>()> const& consumer_factory)
+		template<class MessageT>
+		i_receive_endpoint_configurator & consumer(std::function<std::shared_ptr<message_consumer<MessageT>>()> const& consumer_factory)
 		{
-			add_consumer_factory(message_t::message_type(), consumer_factory);
+			add_consumer_factory(MessageT::message_type(), consumer_factory);
 			return *this;
 		}
 
-		template<class message_t>
-		i_receive_endpoint_configurator & handler(std::function<void(consume_context<message_t> const&)> const& handler)
+		template<class MessageT>
+		i_receive_endpoint_configurator & handler(std::function<void(consume_context<MessageT> const&)> const& handler)
 		{
-			return this->consumer<message_t>(std::make_shared<message_handler<message_t>>(handler));
+			return this->consumer<MessageT>(std::make_shared<message_handler<MessageT>>(handler));
 		}
 
-		template<class message_t, class boost_di_container_t>
-		i_receive_endpoint_configurator & load_from(boost_di_container_t const& container)
+		template<class MessageT, class BoostDiContainerT>
+		i_receive_endpoint_configurator & load_from(BoostDiContainerT const& container)
 		{
-			return this->consumer<message_t>([&container]() -> std::shared_ptr<message_consumer<message_t>>
+			return this->consumer<MessageT>([&container]() -> std::shared_ptr<message_consumer<MessageT>>
 			{
-				return container.template create<std::shared_ptr<message_consumer<message_t>>>();
+				return container.template create<std::shared_ptr<message_consumer<MessageT>>>();
 			});
 		}
 
-		template<class message_t>
-		i_receive_endpoint_configurator & consumer(std::shared_ptr<message_consumer<message_t>> const& consumer_instance)
+		template<class MessageT>
+		i_receive_endpoint_configurator & consumer(std::shared_ptr<message_consumer<MessageT>> const& consumer_instance)
 		{
-			return this->consumer<message_t>([consumer_instance]() -> std::shared_ptr<message_consumer<message_t>> 
+			return this->consumer<MessageT>([consumer_instance]() -> std::shared_ptr<message_consumer<MessageT>> 
 			{ 
 				return consumer_instance; 
 			});
 		}
+
+		void use_concurrency_limit(size_t limit);
 
 	protected:
 		using consumers_map = std::map<std::string, std::shared_ptr<i_message_consumer>>;
@@ -49,6 +51,7 @@ namespace masstransit_cpp
 
 		consumers_factories_map consumers_factories_by_type_;
 		std::string queue_;
+		size_t concurrency_limit_ = 1;
 
 		virtual void add_consumer_factory(std::string const& message_type, std::function<std::shared_ptr<i_message_consumer>()> const& factory);
 		consumers_map create_consumers() const;

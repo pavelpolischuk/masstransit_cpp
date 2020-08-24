@@ -24,7 +24,8 @@ namespace masstransit_cpp
 		template<typename OtherMessageT>
 		std::future<bool> publish(OtherMessageT const& message) const
 		{
-			return publish_endpoint_->publish(message);
+			const auto response = info.create_in_context(message);
+			return publish_endpoint_->publish(response, OtherMessageT::message_type());
 		}
 
 	private:

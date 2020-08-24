@@ -10,10 +10,16 @@
 
 namespace masstransit_cpp
 {
-	namespace threads {
-		class task_repeat;
-		class worker_thread;
-	}
+	namespace threads { class worker_thread; }
+	namespace rabbit_mq { class amqp_channel; }
+
+	struct MASSTRANSIT_CPP_API rabbit_mq_config
+	{
+		const amqp_host target_host;
+		const host_info client_host;
+
+		rabbit_mq_config(amqp_host const& target_host, host_info const& client_host);
+	};
 
 	class MASSTRANSIT_CPP_API rabbit_mq_bus : public bus, public std::enable_shared_from_this<rabbit_mq_bus>
 	{
@@ -25,29 +31,24 @@ namespace masstransit_cpp
 		void stop() override;
 
 	protected:
-		rabbit_mq_bus(amqp_host const& target_host,
-			host_info const& client_info,
+		rabbit_mq_bus(rabbit_mq_config const& config,
 			std::shared_ptr<rabbit_mq::exchange_manager> const& exchange_manager,
+			std::shared_ptr<message_publisher> const& message_publisher,
 			std::vector<rabbit_mq::receive_endpoint::factory> const& receivers_factories);
 		
-		std::future<bool> publish(consume_context_info const& message, std::string const& exchange) const override;
-
-		void fill(consume_context_info & message, std::string const& exchange) const override;
+		std::future<bool> publish(consume_context_info message, std::string const& exchange) const override;
 
 	friend class rabbit_mq_configurator;
 
 	private:
-		boost::shared_ptr<AmqpClient::Channel> queue_channel_;
-		std::shared_ptr<rabbit_mq::exchange_manager> exchange_manager_;
+		std::shared_ptr<rabbit_mq::amqp_channel> queue_channel_;
 		std::vector<std::shared_ptr<rabbit_mq::receive_endpoint>> receivers_;
+		
+		const std::shared_ptr<rabbit_mq::exchange_manager> exchange_manager_;
 		const std::vector<rabbit_mq::receive_endpoint::factory> receivers_factories_;
-		const amqp_host target_host_;
-		const host_info host_info_;
-		const message_publisher message_publisher_;
+		const std::shared_ptr<message_publisher> message_publisher_;
+		const rabbit_mq_config config_;
 
-		std::shared_ptr<threads::task_repeat> receiving_loop_;
 		std::unique_ptr<threads::worker_thread> publish_worker_;
-
-		bool process_input_messages();
 	};
 }

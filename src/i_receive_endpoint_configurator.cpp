@@ -6,7 +6,12 @@ namespace masstransit_cpp
 		: queue_(queue_name)
 	{
 	}
-	
+
+	void i_receive_endpoint_configurator::use_concurrency_limit(const size_t limit)
+	{
+		concurrency_limit_ = limit;
+	}
+
 	void i_receive_endpoint_configurator::add_consumer_factory(std::string const& message_type, std::function<std::shared_ptr<i_message_consumer>()> const& factory)
 	{
 		consumers_factories_by_type_["urn:message:" + message_type] = factory;

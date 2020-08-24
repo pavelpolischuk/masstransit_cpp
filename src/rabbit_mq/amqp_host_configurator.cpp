@@ -28,15 +28,15 @@ namespace masstransit_cpp
 
 	amqp_host_configurator& amqp_host_configurator::use_ssl(std::function<void(ssl_config&)> const& configure)
 	{
-		if(ssl_ == boost::none)
+		if(!ssl_.has_value())
 			ssl_ = ssl_config();
 
-		configure(ssl_.get());
+		configure(ssl_.value());
 		return *this;
 	}
 
 	amqp_host amqp_host_configurator::get_host() const
 	{
-		return amqp_host{ host_, port_, vhost_, username_, password_, ssl_ };
+		return amqp_host(host_, port_, vhost_, username_, password_, ssl_);
 	}
 }
