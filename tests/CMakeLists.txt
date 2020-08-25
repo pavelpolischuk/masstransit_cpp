@@ -40,7 +40,7 @@ include_directories("include")
 add_executable(testing ${SOURCE_FILES})
 target_link_libraries(testing masstransit_cpp)
 
-add_test(NAME testing COMMAND testing WORKING_DIRECTORY bin)
+add_test(NAME testing COMMAND testing)
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
 

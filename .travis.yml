@@ -30,7 +30,7 @@ install:
   - export BOOST_DI_DIR=`pwd`/di
   - git clone https://github.com/alanxz/rabbitmq-c.git
   - cd rabbitmq-c
-  - git checkout v0.8.0
+  - git checkout v0.10.0
   - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_TOOLS=OFF -DENABLE_SSL_SUPPORT=${RABBITMQC_SSL} .
   - cmake --build . --target install
   - popd
@@ -44,6 +44,4 @@ before_script:
 script:
   - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DRabbitmqc_DIR=${INSTALL_PREFIX} -DBOOST_DI_DIR=${BOOST_DI_DIR} ..
   - cmake --build . --target install
-    
-after_script:
-  - LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib ctest -V -C ${BUILD_TYPE}
+  - ctest -V -C ${BUILD_TYPE} .
