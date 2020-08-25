@@ -12,8 +12,14 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - sourceline: deb https://dl.bintray.com/rabbitmq-erlang/debian bionic erlang
+        key_url: https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+      - sourceline: deb https://dl.bintray.com/rabbitmq/debian bionic main
+        key_url: https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
     packages:
       - g++-8
+      - libboost-dev
+      - rabbitmq-server
 
 services: rabbitmq
    
@@ -44,4 +50,4 @@ before_script:
 script:
   - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DRabbitmqc_DIR=${INSTALL_PREFIX} -DBOOST_DI_DIR=${BOOST_DI_DIR} ..
   - cmake --build . --target install
-  - ctest -V -C ${BUILD_TYPE} .
+  - AMQP_BROKER=localhost ctest -V -C ${BUILD_TYPE} .

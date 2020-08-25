@@ -43,9 +43,3 @@ target_link_libraries(testing masstransit_cpp)
 add_test(NAME testing COMMAND testing)
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE_FILES})
-
-install(TARGETS testing
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-)
