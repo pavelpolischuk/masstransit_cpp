@@ -10,18 +10,19 @@ namespace masstransit_cpp_tests
 
 		{
 			std::unique_lock<std::mutex> lock(mutex_);
-			if(values_by_threads_.find(thread_id) == values_by_threads_.end())
-				values_by_threads_.emplace(thread_id, context.message.id);
+			values_by_threads_[thread_id] = context.message.id;
 		}
 
-		condition_.notify_one();
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		if (values_by_threads_.size() >= NEED_THREAD_COUNT) 
+			condition_.notify_all();
+		else 
+			wait();
 	}
 
 	void message_consumer_threads::wait()
 	{
 		std::unique_lock<std::mutex> lock(mutex_);
-		condition_.wait_for(lock, std::chrono::seconds(3), [this] { return values_by_threads_.size() >= NEED_THREAD_COUNT; });
+		condition_.wait_for(lock, std::chrono::seconds(6), [this] { return values_by_threads_.size() >= NEED_THREAD_COUNT; });
 	}
 
 	size_t message_consumer_threads::involved_threads_count() const

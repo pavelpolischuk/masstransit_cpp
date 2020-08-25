@@ -126,7 +126,7 @@ namespace masstransit_cpp_tests
 					endpoint_configurator.consumer<message_mock>(consumer_mock);
 					endpoint_configurator.timeout(std::chrono::milliseconds(100));
 					endpoint_configurator.exclusive(true);
-					endpoint_configurator.use_concurrency_limit(3);
+					endpoint_configurator.use_concurrency_limit(message_consumer_threads::NEED_THREAD_COUNT);
 				});
 			});
 
